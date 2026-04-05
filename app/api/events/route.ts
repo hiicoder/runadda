@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const event = await createEvent(session.user.id, {
       title: body.title,
       description: body.description,
-      dateTime: body.dateTime ? new Date(body.dateTime) : undefined,
+      dateTime: new Date(body.dateTime),
       location: body.location,
       imageUrl: body.imageUrl,
     })
