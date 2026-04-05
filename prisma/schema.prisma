@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  EDITOR
+  ADMIN
+}
+
+enum RsvpStatus {
+  JOINED
+  MAYBE
+  CANCELED
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  name               String?
+  email              String    @unique
+  emailVerified      DateTime?
+  image              String?
+  bio                String?
+  passwordHash       String?
+  role               Role      @default(USER)
+  isMember           Boolean   @default(false)
+  stravaId           String?   @unique
+  stravaAccessToken  String?
+  stravaRefreshToken String?
+  stravaExpiresAt    DateTime?
+  stravaConnected    Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  accounts         Account[]
+  sessions         Session[]
+  rsvps            Rsvp[]
+  cachedActivities CachedStravaActivity[]
+  createdEvents    Event[]                @relation("EventCreator")
+  usedCode         MembershipCode?        @relation("UsedBy")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dateTime    DateTime
+  location    String
+  imageUrl    String?
+  creatorId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator User   @relation("EventCreator", fields: [creatorId], references: [id])
+  rsvps   Rsvp[]
+}
+
+model Rsvp {
+  id        String     @id @default(cuid())
+  userId    String
+  eventId   String
+  status    RsvpStatus
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
+
+model CachedStravaActivity {
+  id            String   @id @default(cuid())
+  userId        String
+  stravaId      String   @unique
+  activityType  String   @default("Run")
+  distance      Float
+  movingTime    Int
+  pace          Float
+  elevationGain Float    @default(0)
+  date          DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model MembershipCode {
+  id        String    @id @default(cuid())
+  code      String    @unique
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+  usedById  String?   @unique
+
+  usedBy User? @relation("UsedBy", fields: [usedById], references: [id])
+}
+
+model Sponsor {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String
+  url       String?
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  avatar    String?
+  quote     String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model SiteSlide {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  imageUrl    String?
+  ctaLabel    String?
+  ctaUrl      String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model SiteStat {
+  id        String   @id @default(cuid())
+  value     String
+  label     String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model AboutContent {
+  id          String   @id @default(cuid())
+  section     String   // 'intro' | 'vision' | 'mission' | 'value'
+  title       String
+  body        String
+  imageUrl    String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}

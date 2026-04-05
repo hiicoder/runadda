@@ -1,0 +1,111 @@
+// Test schema using SQLite for in-memory testing
+// SQLite does not support enums, so Role and RsvpStatus are stored as String
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/test-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("TEST_DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  name               String?
+  email              String    @unique
+  emailVerified      DateTime?
+  image              String?
+  bio                String?
+  passwordHash       String?
+  /// Role: USER | ADMIN
+  role               String    @default("USER")
+  stravaId           String?   @unique
+  stravaAccessToken  String?
+  stravaRefreshToken String?
+  stravaExpiresAt    DateTime?
+  stravaConnected    Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  accounts         Account[]
+  sessions         Session[]
+  rsvps            Rsvp[]
+  cachedActivities CachedStravaActivity[]
+  createdEvents    Event[]                @relation("EventCreator")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dateTime    DateTime
+  location    String
+  imageUrl    String?
+  creatorId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator User   @relation("EventCreator", fields: [creatorId], references: [id])
+  rsvps   Rsvp[]
+}
+
+model Rsvp {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String
+  /// RsvpStatus: JOINED | MAYBE | CANCELED
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
+
+model CachedStravaActivity {
+  id            String   @id @default(cuid())
+  userId        String
+  stravaId      String   @unique
+  distance      Float
+  movingTime    Int
+  pace          Float
+  elevationGain Float    @default(0)
+  date          DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
