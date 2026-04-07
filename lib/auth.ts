@@ -17,34 +17,42 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.error("[AUTH] Missing credentials")
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        })
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          })
 
-        if (!user || !user.passwordHash) {
-          return null
-        }
+          if (!user || !user.passwordHash) {
+            console.error("[AUTH] User not found or no password hash:", credentials.email)
+            return null
+          }
 
-        const passwordValid = await bcrypt.compare(
-          credentials.password,
-          user.passwordHash
-        )
+          const passwordValid = await bcrypt.compare(
+            credentials.password,
+            user.passwordHash
+          )
 
-        if (!passwordValid) {
-          return null
-        }
+          if (!passwordValid) {
+            console.error("[AUTH] Invalid password for:", credentials.email)
+            return null
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          role: user.role,
-          isMember: user.isMember,
-          stravaConnected: user.stravaConnected,
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            role: user.role,
+            isMember: user.isMember,
+            stravaConnected: user.stravaConnected,
+          }
+        } catch (err) {
+          console.error("[AUTH] Database error during authorize:", err)
+          throw err
         }
       },
     }),
