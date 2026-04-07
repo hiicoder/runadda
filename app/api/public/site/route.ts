@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const revalidate = 60 // cache for 60 seconds
+
 export async function GET() {
   try {
     const [sponsors, testimonials, slides, stats, about] = await Promise.all([
@@ -13,7 +15,6 @@ export async function GET() {
     return NextResponse.json({ sponsors, testimonials, slides, stats, about })
   } catch (err) {
     console.error('[/api/public/site]', err)
-    // Return empty arrays so the landing page still renders with defaults
     return NextResponse.json({ sponsors: [], testimonials: [], slides: [], stats: [], about: [] })
   }
 }

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+export const revalidate = 60 // cache for 60 seconds
+
 export async function GET() {
   const events = await prisma.event.findMany({
     where: { dateTime: { gte: new Date() } },
