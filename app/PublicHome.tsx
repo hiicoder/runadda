@@ -7,7 +7,7 @@ interface Sponsor { id: string; name: string; logo: string; url: string | null }
 interface Testimonial { id: string; name: string; role: string | null; avatar: string | null; quote: string }
 interface Slide { id: string; title: string; subtitle: string | null; imageUrl: string | null; ctaLabel: string | null; ctaUrl: string | null }
 interface SiteStat { id: string; value: string; label: string }
-interface SiteData { sponsors: Sponsor[]; testimonials: Testimonial[]; slides: Slide[]; stats: SiteStat[] }
+interface SiteData { sponsors: Sponsor[]; testimonials: Testimonial[]; slides: Slide[]; stats: SiteStat[]; events: Event[] }
 
 interface Event {
   id: string; title: string; description: string | null
@@ -477,12 +477,19 @@ function Navbar() {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function PublicHome() {
-  const [events, setEvents] = useState<Event[]>([])
   const [siteData, setSiteData] = useState<SiteData | null>(null)
 
   useEffect(() => {
-    fetch("/api/public/events").then(r => r.json() as Promise<Event[]>).then(setEvents).catch(() => {})
-    fetch("/api/public/site").then(r => r.json() as Promise<SiteData>).then(setSiteData).catch(() => setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [] }))
+    async function loadData() {
+      try {
+        const res = await fetch("/api/public/site")
+        if (res.ok) setSiteData(await res.json())
+        else setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
+      } catch {
+        setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
+      }
+    }
+    loadData()
   }, [])
 
   return (
@@ -491,7 +498,7 @@ export default function PublicHome() {
       <PurpleHero />
       {siteData && <ImageSlider slides={siteData.slides} />}
       <AboutTeaser />
-      <EventsSection events={events} />
+      <EventsSection events={siteData?.events ?? []} />
       <ActivitiesSection />
       {siteData && <SponsorsSection sponsors={siteData.sponsors} />}
       {siteData && <TestimonialsSection testimonials={siteData.testimonials} />}
