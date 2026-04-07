@@ -48,11 +48,13 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
-    // Google OAuth
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    }),
+    // Google OAuth (only enabled if credentials are configured)
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [GoogleProvider({
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        })]
+      : []),
     // Strava is handled via custom /api/strava/connect flow, not NextAuth OAuth
   ],
   callbacks: {
