@@ -13,8 +13,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Strava not configured" }, { status: 500 })
   }
 
-  // Use request URL to build callback so it works on any domain (local + Vercel)
-  const baseUrl = new URL(request.url).origin
+  // Build base URL — strip any trailing slash
+  const origin = new URL(request.url).origin.replace(/\/+$/, "")
+  const baseUrl = process.env.NEXTAUTH_URL?.replace(/\/+$/, "") ?? origin
 
   const params = new URLSearchParams({
     client_id: clientId,
