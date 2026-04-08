@@ -1,4 +1,6 @@
-import { headers } from "next/headers"
+"use client"
+
+import { useEffect, useState } from "react"
 import { getActivityIcon, getActivityLabel } from "@/lib/activity-types"
 
 function formatDistance(meters: number) { return (meters / 1000).toFixed(2) + " km" }
@@ -23,28 +25,64 @@ interface DashboardData {
   chartData: ChartPoint[]
 }
 
-async function getDashboardData(): Promise<DashboardData | null> {
-  try {
-    const headersList = await headers()
-    const host = headersList.get("host") ?? "localhost:3000"
-    const protocol = process.env.NODE_ENV === "production" ? "https" : "http"
-    const res = await fetch(`${protocol}://${host}/api/dashboard`, {
-      cache: "no-store",
-      headers: { cookie: headersList.get("cookie") ?? "" },
-    })
-    if (!res.ok) return null
-    return res.json()
-  } catch { return null }
+function Skeleton({ className }: { className?: string }) {
+  return <div className={`animate-pulse bg-gray-200 rounded-lg ${className}`} />
 }
 
-export default async function DashboardPage() {
-  const data = await getDashboardData()
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <Skeleton className="h-7 w-36" />
+        <Skeleton className="h-4 w-48 mt-2" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[1,2,3].map(i => (
+          <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm space-y-3">
+            <Skeleton className="h-8 w-8" />
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {[1,2].map(i => (
+          <div key={i} className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-5 py-4 border-b border-gray-100"><Skeleton className="h-5 w-32" /></div>
+            <div className="p-5 space-y-3">
+              {[1,2,3].map(j => <Skeleton key={j} className="h-12 w-full" />)}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div className="px-5 py-4 border-b border-gray-100"><Skeleton className="h-5 w-36" /></div>
+        <div className="p-5 space-y-3">
+          {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-4 w-full" />)}
+        </div>
+      </div>
+    </div>
+  )
+}
 
-  if (!data) return (
+export default function DashboardPage() {
+  const [data, setData] = useState<DashboardData | null>(null)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    fetch("/api/dashboard")
+      .then(r => { if (!r.ok) throw new Error(); return r.json() })
+      .then(setData)
+      .catch(() => setError(true))
+  }, [])
+
+  if (error) return (
     <div className="flex items-center justify-center h-64">
       <p className="text-gray-500">Unable to load dashboard. Please try again.</p>
     </div>
   )
+
+  if (!data) return <DashboardSkeleton />
 
   const { showStravaPrompt, weeklyStats, upcomingEvents, recentActivities, chartData } = data
   const maxDist = Math.max(...chartData.map(p => p.totalDistance), 1)
@@ -70,25 +108,21 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: "Distance This Week", value: formatDistance(weeklyStats.totalDistance), icon: "📏", color: "indigo" },
-          { label: "Runs This Week", value: String(weeklyStats.runCount), icon: "👟", color: "emerald" },
-          { label: "Average Pace", value: formatPace(weeklyStats.averagePace), icon: "⚡", color: "violet" },
+          { label: "Distance This Week", value: formatDistance(weeklyStats.totalDistance), icon: "📏" },
+          { label: "Runs This Week", value: String(weeklyStats.runCount), icon: "👟" },
+          { label: "Average Pace", value: formatPace(weeklyStats.averagePace), icon: "⚡" },
         ].map(({ label, value, icon }) => (
           <div key={label} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-2xl">{icon}</span>
-            </div>
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
+            <span className="text-2xl">{icon}</span>
+            <p className="text-2xl font-bold text-gray-900 mt-3">{value}</p>
             <p className="text-sm text-gray-500 mt-1">{label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Upcoming Events */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="font-semibold text-gray-900">Upcoming Events</h2>
@@ -109,7 +143,6 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Activities */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
             <h2 className="font-semibold text-gray-900">Recent Activities</h2>
@@ -137,7 +170,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* 12-week chart */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="px-5 py-4 border-b border-gray-100">
           <h2 className="font-semibold text-gray-900">12-Week Distance</h2>
