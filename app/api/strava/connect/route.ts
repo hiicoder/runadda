@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getRequiredSession } from "@/lib/auth"
-import { saveStravaTokens } from "@/lib/strava/token-manager"
-import { prisma } from "@/lib/prisma"
 
-/**
- * Step 1: Redirect user to Strava OAuth
- */
 export async function GET(request: NextRequest) {
   try {
     await getRequiredSession()
@@ -13,9 +8,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
 
+  const clientId = process.env.STRAVA_CLIENT_ID
+  if (!clientId) {
+    return NextResponse.json({ error: "Strava not configured" }, { status: 500 })
+  }
+
+  // Use request URL to build callback so it works on any domain (local + Vercel)
+  const baseUrl = new URL(request.url).origin
+
   const params = new URLSearchParams({
-    client_id: process.env.STRAVA_CLIENT_ID ?? "",
-    redirect_uri: `${process.env.NEXTAUTH_URL}/api/strava/connect/callback`,
+    client_id: clientId,
+    redirect_uri: `${baseUrl}/api/strava/connect/callback`,
     response_type: "code",
     approval_prompt: "auto",
     scope: "activity:read_all",
