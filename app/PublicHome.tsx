@@ -411,6 +411,7 @@ function Footer() {
               <li><Link href="/register" className="hover:text-white transition">Register</Link></li>
               <li><a href="#about" className="hover:text-white transition">About Us</a></li>
               <li><a href="#events" className="hover:text-white transition">Events</a></li>
+              <li><Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
             </ul>
           </div>
           <div>
