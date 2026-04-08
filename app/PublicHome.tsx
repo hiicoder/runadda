@@ -442,10 +442,18 @@ function Footer() {
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const [session, setSession] = useState<{ name?: string | null } | null>(null)
+
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handler)
     return () => window.removeEventListener("scroll", handler)
+  }, [])
+
+  useEffect(() => {
+    fetch("/api/auth/session").then(r => r.json()).then(s => {
+      if (s?.user) setSession(s.user)
+    }).catch(() => {})
   }, [])
 
   return (
@@ -461,14 +469,23 @@ function Navbar() {
           <a href="#about" className={`text-sm font-medium hidden sm:block transition ${scrolled ? "text-gray-600 hover:text-indigo-600" : "text-white/80 hover:text-white"}`}>
             About
           </a>
-          <Link href="/login"
-            className={`text-sm font-semibold px-4 py-2 rounded-full transition ${scrolled ? "text-indigo-600 border border-indigo-200 hover:bg-indigo-50" : "text-white border border-white/30 hover:bg-white/10"}`}>
-            Sign In
-          </Link>
-          <Link href="/register"
-            className="text-sm font-bold px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-gray-900 rounded-full transition">
-            Join Free
-          </Link>
+          {session ? (
+            <Link href="/dashboard"
+              className={`text-sm font-semibold px-4 py-2 rounded-full transition ${scrolled ? "text-indigo-600 border border-indigo-200 hover:bg-indigo-50" : "text-white border border-white/30 hover:bg-white/10"}`}>
+              My Dashboard →
+            </Link>
+          ) : (
+            <>
+              <Link href="/login"
+                className={`text-sm font-semibold px-4 py-2 rounded-full transition ${scrolled ? "text-indigo-600 border border-indigo-200 hover:bg-indigo-50" : "text-white border border-white/30 hover:bg-white/10"}`}>
+                Sign In
+              </Link>
+              <Link href="/register"
+                className="text-sm font-bold px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-gray-900 rounded-full transition">
+                Join Free
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
