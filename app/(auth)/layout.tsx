@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Run<span className="text-indigo-600">adda</span></h1>
           </a>
-          <p className="text-sm text-gray-500 mt-1 italic">Har Kadam Mein Masti</p>
+          <p className="text-sm text-gray-500 mt-1 italic">Har Kadam Me Masti</p>
         </div>
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
           {children}
