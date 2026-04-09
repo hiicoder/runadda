@@ -480,63 +480,120 @@ function AboutEditor() {
 }
 
 // ── Theme Editor ──────────────────────────────────────────────────────────────
+interface SiteTheme { id: string; name: string; primary: string; secondary: string; accent: string; neutral: string; isActive: boolean }
+
 function ThemeEditor() {
-  const [colors, setColors] = useState({ primary: '#6366f1', secondary: '#7c3aed', accent: '#facc15', neutral: '#1e293b' })
+  const [themes, setThemes] = useState<SiteTheme[]>([])
+  const [form, setForm] = useState({ name: '', primary: '#6366f1', secondary: '#7c3aed', accent: '#facc15', neutral: '#1e293b' })
   const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
+  const [activating, setActivating] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetch('/api/admin/site/theme').then(r => r.json()).then(t => {
-      if (t.primary) setColors({ primary: t.primary, secondary: t.secondary, accent: t.accent, neutral: t.neutral })
-    }).catch(() => {})
-  }, [])
+  async function load() {
+    const r = await fetch('/api/admin/site/theme')
+    if (r.ok) setThemes(await r.json())
+  }
+  useEffect(() => { void load() }, [])
 
-  async function save(e: React.FormEvent) {
+  async function create(e: React.FormEvent) {
     e.preventDefault(); setSaving(true)
-    await fetch('/api/admin/site/theme', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(colors) })
-    setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2000)
+    await fetch('/api/admin/site/theme', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+    setForm({ name: '', primary: '#6366f1', secondary: '#7c3aed', accent: '#facc15', neutral: '#1e293b' })
+    await load(); setSaving(false)
   }
 
-  const fields = [
-    { key: 'primary', label: 'Primary', desc: 'Buttons, links, nav active state' },
-    { key: 'secondary', label: 'Secondary', desc: 'Hero gradient, admin navbar' },
-    { key: 'accent', label: 'Accent', desc: 'CTA buttons, stats bar, highlights' },
-    { key: 'neutral', label: 'Neutral', desc: 'Dark text, footer, hero overlay' },
+  async function activate(id: string) {
+    setActivating(id)
+    await fetch(`/api/admin/site/theme/${id}`, { method: 'PATCH' })
+    await load(); setActivating(null)
+  }
+
+  async function del(id: string, name: string) {
+    if (!confirm(`Delete theme "${name}"?`)) return
+    await fetch(`/api/admin/site/theme/${id}`, { method: 'DELETE' })
+    await load()
+  }
+
+  const colorFields = [
+    { key: 'primary', label: 'Primary', desc: 'Buttons, links' },
+    { key: 'secondary', label: 'Secondary', desc: 'Hero gradient' },
+    { key: 'accent', label: 'Accent', desc: 'CTA, highlights' },
+    { key: 'neutral', label: 'Neutral', desc: 'Dark text, footer' },
   ] as const
 
   return (
-    <form onSubmit={save} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {fields.map(f => (
-          <div key={f.key} className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50">
-            <input type="color" value={colors[f.key]}
-              onChange={e => setColors(c => ({ ...c, [f.key]: e.target.value }))}
-              className="w-12 h-12 rounded-lg border border-gray-300 cursor-pointer p-0.5 bg-white" />
-            <div className="flex-1">
-              <p className="font-semibold text-sm text-gray-900">{f.label}</p>
-              <p className="text-xs text-gray-500">{f.desc}</p>
-              <p className="text-xs font-mono text-gray-400 mt-0.5">{colors[f.key]}</p>
+    <div className="space-y-6">
+      {/* Existing themes */}
+      <div className="space-y-3">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Saved Themes</p>
+        {themes.length === 0 && <p className="text-sm text-gray-400">No themes yet. Create one below.</p>}
+        {themes.map(t => (
+          <div key={t.id} className={`rounded-xl border p-4 flex items-center gap-4 ${t.isActive ? 'border-violet-400 bg-violet-50' : 'border-gray-200 bg-gray-50'}`}>
+            {/* Color swatches */}
+            <div className="flex gap-1.5 shrink-0">
+              {[t.primary, t.secondary, t.accent, t.neutral].map((c, i) => (
+                <div key={i} className="w-6 h-6 rounded-full border border-white shadow-sm" style={{ backgroundColor: c }} />
+              ))}
             </div>
-            <div className="w-8 h-8 rounded-full border border-gray-200 shrink-0" style={{ backgroundColor: colors[f.key] }} />
+            {/* Name + preview */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-sm text-gray-900">{t.name}</p>
+                {t.isActive && <span className="text-xs bg-violet-600 text-white px-2 py-0.5 rounded-full font-bold">ACTIVE</span>}
+              </div>
+              <div className="flex gap-1 mt-1.5">
+                <span className="text-xs px-2 py-0.5 rounded-full text-white font-medium" style={{ backgroundColor: t.primary }}>Primary</span>
+                <span className="text-xs px-2 py-0.5 rounded-full text-white font-medium" style={{ backgroundColor: t.secondary }}>Secondary</span>
+                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: t.accent, color: t.neutral }}>Accent</span>
+              </div>
+            </div>
+            {/* Actions */}
+            <div className="flex gap-2 shrink-0">
+              {!t.isActive && (
+                <button onClick={() => activate(t.id)} disabled={activating === t.id}
+                  className={`${btnSm} bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50`}>
+                  {activating === t.id ? '…' : '✓ Apply'}
+                </button>
+              )}
+              <button onClick={() => del(t.id, t.name)}
+                className={`${btnSm} bg-red-50 text-red-600 hover:bg-red-100`}>Delete</button>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Live preview */}
-      <div className="rounded-xl border border-gray-200 overflow-hidden">
-        <p className="text-xs font-semibold text-gray-500 px-3 py-2 bg-gray-50 border-b border-gray-200">Preview</p>
-        <div className="p-4 flex flex-wrap gap-3 items-center" style={{ background: `linear-gradient(135deg, ${colors.neutral}, ${colors.secondary}, ${colors.primary})` }}>
-          <button type="button" className="px-4 py-2 rounded-full text-sm font-bold" style={{ backgroundColor: colors.accent, color: colors.neutral }}>Join Free</button>
-          <button type="button" className="px-4 py-2 rounded-full text-sm font-bold text-white border border-white/30">Sign In</button>
-          <span className="text-white font-black text-lg">Run<span style={{ color: colors.accent }}>adda</span></span>
-        </div>
+      {/* Create new theme */}
+      <div className="border-t border-gray-200 pt-5">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Create New Theme</p>
+        <form onSubmit={create} className="space-y-4">
+          <input className={inputCls} placeholder="Theme name (e.g. Ocean Blue)" value={form.name}
+            onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {colorFields.map(f => (
+              <div key={f.key} className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-gray-200 bg-gray-50">
+                <input type="color" value={form[f.key]}
+                  onChange={e => setForm(c => ({ ...c, [f.key]: e.target.value }))}
+                  className="w-12 h-12 rounded-lg border border-gray-300 cursor-pointer p-0.5 bg-white w-full" />
+                <p className="text-xs font-semibold text-gray-700">{f.label}</p>
+                <p className="text-xs text-gray-400 text-center">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+          {/* Live preview */}
+          <div className="rounded-xl overflow-hidden border border-gray-200">
+            <p className="text-xs font-semibold text-gray-500 px-3 py-2 bg-gray-50 border-b border-gray-200">Preview</p>
+            <div className="p-4 flex flex-wrap gap-3 items-center" style={{ background: `linear-gradient(135deg, ${form.neutral}, ${form.secondary}, ${form.primary})` }}>
+              <button type="button" className="px-4 py-2 rounded-full text-sm font-bold" style={{ backgroundColor: form.accent, color: form.neutral }}>Join Free</button>
+              <button type="button" className="px-4 py-2 rounded-full text-sm font-bold text-white border border-white/30">Sign In</button>
+              <span className="text-white font-black text-lg">Run<span style={{ color: form.accent }}>adda</span></span>
+            </div>
+          </div>
+          <button type="submit" disabled={saving}
+            className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-50">
+            {saving ? 'Creating…' : '➕ Create Theme'}
+          </button>
+        </form>
       </div>
-
-      <button type="submit" disabled={saving}
-        className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-50">
-        {saved ? '✅ Saved!' : saving ? 'Saving…' : '💾 Save Theme'}
-      </button>
-    </form>
+    </div>
   )
 }
 

@@ -187,9 +187,12 @@ model AboutContent {
 
 model SiteTheme {
   id        String   @id @default(cuid())
-  primary   String   @default("#6366f1") // main brand color (buttons, links)
-  secondary String   @default("#7c3aed") // hero/gradient color
-  accent    String   @default("#facc15") // CTA buttons, highlights
-  neutral   String   @default("#1e293b") // text/dark elements
+  name      String   @default("Custom Theme")
+  primary   String   @default("#6366f1")
+  secondary String   @default("#7c3aed")
+  accent    String   @default("#facc15")
+  neutral   String   @default("#1e293b")
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

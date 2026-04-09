@@ -29,7 +29,7 @@ export async function GET() {
     // Theme is optional — if table doesn't exist yet, fall back to defaults
     let theme = defaultTheme
     try {
-      const dbTheme = await prisma.siteTheme.findFirst()
+      const dbTheme = await prisma.siteTheme.findFirst({ where: { isActive: true } })
       if (dbTheme) theme = { primary: dbTheme.primary, secondary: dbTheme.secondary, accent: dbTheme.accent, neutral: dbTheme.neutral }
     } catch { /* table may not exist yet */ }
 
