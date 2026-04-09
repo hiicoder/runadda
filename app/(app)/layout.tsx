@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
@@ -35,8 +36,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16 justify-between">
             <Link href="/" className="flex items-center gap-2 font-bold text-indigo-600 text-lg shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Runadda" className="w-7 h-7 rounded-lg object-contain" />
+              <Image src="/logo.png" alt="Runadda" width={28} height={28} className="rounded-lg object-contain" />
               <span>Run<span className="text-gray-800">adda</span></span>
             </Link>
 

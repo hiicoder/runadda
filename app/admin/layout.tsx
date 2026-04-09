@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
@@ -48,8 +49,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16 justify-between">
             <div className="flex items-center gap-2 font-bold text-lg shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Runadda" className="w-7 h-7 rounded-lg object-contain" />
+              <Image src="/logo.png" alt="Runadda" width={28} height={28} className="rounded-lg object-contain" />
               Run<span className="text-yellow-300">adda</span>
               <span className="ml-1 text-xs bg-white/20 px-2 py-0.5 rounded-full font-semibold tracking-wide">
                 {session.user.role}
