@@ -380,7 +380,7 @@ function ContactSection() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
           {[
             { icon: "📧", label: "Email Us", value: "runadda.in@gmail.com", href: "mailto:runadda.in@gmail.com" },
-            { icon: "📸", label: "Instagram", value: "@runadda", href: "https://www.instagram.com/run_adda" },
+            { icon: "📸", label: "Instagram", value: "@run_adda", href: "https://www.instagram.com/run_adda?igsh=dnd4MTc2YWIweTQ=" },
             { icon: "💬", label: "WhatsApp", value: "Join our group", href: "https://chat.whatsapp.com/HX3zkBRPkzi2bgEoRlB4Jp?mode=gi_t" },
           ].map(item => (
             <a key={item.label} href={item.href} target={item.href.startsWith("mailto") ? undefined : "_blank"} rel="noopener noreferrer"
@@ -487,9 +487,9 @@ function Footer() {
               {[
                 { icon: "📘", label: "Facebook", href: "https://www.facebook.com/share/18BU7H1Gqz/" },
                 { icon: "📸", label: "Instagram", href: "https://www.instagram.com/run_adda?igsh=dnd4MTc2YWIweTQ=" },
+                { icon: "💬", label: "Whatsapp", href:"https://chat.whatsapp.com/HX3zkBRPkzi2bgEoRlB4Jp?mode=gi_t" },
                 // { icon: "🐦", label: "Twitter", href: "#" },
                 // { icon: "▶️", label: "YouTube", href: "#" },
-                { icon: "💬", label: "Whatsapp Group", href:"https://chat.whatsapp.com/HX3zkBRPkzi2bgEoRlB4Jp?mode=gi_t" },
               ].map(s => (
                 <a key={s.label} href={s.href}
                   className="flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg text-sm transition">
