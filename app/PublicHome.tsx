@@ -461,8 +461,12 @@ function Navbar() {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur shadow-md" : "bg-transparent"}`}>
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div className={`font-black text-xl ${scrolled ? "text-gray-900" : "text-white"}`}>
-          Run<span className="text-yellow-400">adda</span>
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Runadda" className="w-8 h-8 rounded-lg object-contain" />
+          <div className={`font-black text-xl ${scrolled ? "text-gray-900" : "text-white"}`}>
+            Run<span className="text-yellow-400">adda</span>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <a href="#events" className={`text-sm font-medium hidden sm:block transition ${scrolled ? "text-gray-600 hover:text-indigo-600" : "text-white/80 hover:text-white"}`}>
@@ -543,7 +547,9 @@ export default function PublicHome() {
       {!skipLoader && (
         <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 transition-opacity duration-700 ${ready ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
           <div className="text-center text-white">
-            <div className="text-6xl font-black mb-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Runadda" className="w-20 h-20 rounded-2xl object-contain mx-auto mb-4 shadow-xl" />
+            <div className="text-4xl font-black mb-1">
               Run<span className="text-yellow-400">adda</span>
             </div>
             <p className="text-white/70 italic text-sm mb-8">&ldquo;Har Kadam Me Masti&rdquo;</p>

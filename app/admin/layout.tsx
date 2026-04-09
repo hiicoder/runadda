@@ -48,7 +48,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16 justify-between">
             <div className="flex items-center gap-2 font-bold text-lg shrink-0">
-              <span>⚙️</span> Run<span className="text-yellow-300">adda</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Runadda" className="w-7 h-7 rounded-lg object-contain" />
+              Run<span className="text-yellow-300">adda</span>
               <span className="ml-1 text-xs bg-white/20 px-2 py-0.5 rounded-full font-semibold tracking-wide">
                 {session.user.role}
               </span>
