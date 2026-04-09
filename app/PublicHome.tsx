@@ -367,6 +367,71 @@ function MapSection({ stats }: { stats: SiteStat[] }) {
   )
 }
 
+// ── Contact Section ───────────────────────────────────────────────────────────
+function ContactSection() {
+  return (
+    <section id="contact" className="py-16 bg-white border-t border-gray-100">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="text-center mb-10">
+          <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">Get In Touch</span>
+          <h2 className="text-3xl font-black text-gray-900 mt-1">Contact Us</h2>
+          <p className="text-gray-500 mt-2">Have a question or want to join? We&apos;d love to hear from you.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+          {[
+            { icon: "📧", label: "Email Us", value: "runadda.in@gmail.com", href: "mailto:runadda.in@gmail.com" },
+            { icon: "📸", label: "Instagram", value: "@runadda", href: "https://instagram.com/runadda" },
+            { icon: "💬", label: "WhatsApp", value: "Join our group", href: "https://wa.me/" },
+          ].map(item => (
+            <a key={item.label} href={item.href} target={item.href.startsWith("mailto") ? undefined : "_blank"} rel="noopener noreferrer"
+              className="flex flex-col items-center gap-2 p-6 bg-gray-50 rounded-2xl border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition group">
+              <span className="text-3xl group-hover:scale-110 transition">{item.icon}</span>
+              <p className="font-semibold text-gray-900 text-sm">{item.label}</p>
+              <p className="text-xs text-indigo-600 font-medium">{item.value}</p>
+            </a>
+          ))}
+        </div>
+
+        {/* Quick contact form — opens mailto */}
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100 p-8">
+          <h3 className="font-bold text-gray-900 text-lg mb-1 text-center">Send us a message</h3>
+          <p className="text-sm text-gray-500 text-center mb-6">Fill in the form and we&apos;ll get back to you shortly.</p>
+          <form onSubmit={e => {
+            e.preventDefault()
+            const fd = new FormData(e.currentTarget)
+            const name = fd.get("name"); const email = fd.get("email"); const msg = fd.get("message")
+            const subject = encodeURIComponent(`Message from ${name} via RunAdda`)
+            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${msg}`)
+            window.open(`mailto:runadda.in@gmail.com?subject=${subject}&body=${body}`)
+          }} className="space-y-4 max-w-lg mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Your Name</label>
+                <input name="name" required placeholder="Rahul Sharma"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
+                <input name="email" type="email" required placeholder="you@example.com"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Message</label>
+              <textarea name="message" required rows={4} placeholder="I want to join RunAdda..."
+                className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white resize-none" />
+            </div>
+            <button type="submit"
+              className="w-full py-2.5 btn-primary font-semibold rounded-lg text-sm transition shadow-sm cursor-pointer">
+              Send Message 📧
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ── CTA Section ───────────────────────────────────────────────────────────────
 function CTASection() {
   return (
@@ -412,6 +477,7 @@ function Footer() {
               <li><Link href="/register" className="hover:text-white transition">Register</Link></li>
               <li><a href="#about" className="hover:text-white transition">About Us</a></li>
               <li><a href="#events" className="hover:text-white transition">Events</a></li>
+              <li><a href="#contact" className="hover:text-white transition">Contact</a></li>
               <li><Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
             </ul>
           </div>
@@ -419,8 +485,8 @@ function Footer() {
             <h4 className="text-white font-semibold mb-3">Follow Us</h4>
             <div className="flex gap-3 flex-wrap">
               {[
-                { icon: "📘", label: "Facebook", href: "https://l1nk.dev/482objz" },
-                { icon: "📸", label: "Instagram", href: "https://acesse.one/bqd067l" },
+                { icon: "📘", label: "Facebook", href: "https://www.facebook.com/share/18BU7H1Gqz/" },
+                { icon: "📸", label: "Instagram", href: "https://www.instagram.com/run_adda?igsh=dnd4MTc2YWIweTQ=" },
                 // { icon: "🐦", label: "Twitter", href: "#" },
                 // { icon: "▶️", label: "YouTube", href: "#" },
                 //{ icon: "💬", label: "Email", href: "runadda.in@gmail.com" },
@@ -474,6 +540,9 @@ function Navbar() {
           </a>
           <a href="#about" className={`text-sm font-medium hidden sm:block transition ${scrolled ? "text-gray-600 hover:text-indigo-600" : "text-white/80 hover:text-white"}`}>
             About
+          </a>
+          <a href="#contact" className={`text-sm font-medium hidden sm:block transition ${scrolled ? "text-gray-600 hover:text-indigo-600" : "text-white/80 hover:text-white"}`}>
+            Contact
           </a>
           {isLoggedIn ? (
             <Link href="/dashboard"
@@ -573,6 +642,7 @@ export default function PublicHome() {
         {siteData && <SponsorsSection sponsors={siteData.sponsors} />}
         {siteData && <TestimonialsSection testimonials={siteData.testimonials} />}
         <MapSection stats={siteData?.stats ?? []} />
+        <ContactSection />
         <CTASection />
         <Footer />
       </div>
