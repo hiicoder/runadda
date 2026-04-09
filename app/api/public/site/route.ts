@@ -6,7 +6,7 @@ export const revalidate = 60
 
 export async function GET() {
   try {
-    const [sponsors, testimonials, slides, stats, about, events] = await Promise.all([
+    const [sponsors, testimonials, slides, stats, about, events, theme] = await Promise.all([
       prisma.sponsor.findMany({ where: { active: true }, orderBy: { order: 'asc' } }),
       prisma.testimonial.findMany({ where: { active: true }, orderBy: { order: 'asc' } }),
       prisma.siteSlide.findMany({ where: { active: true }, orderBy: { order: 'asc' } }),
@@ -22,10 +22,12 @@ export async function GET() {
           _count: { select: { rsvps: true } },
         },
       }),
+      prisma.siteTheme.findFirst(),
     ])
-    return NextResponse.json({ sponsors, testimonials, slides, stats, about, events })
+    const defaultTheme = { primary: '#6366f1', secondary: '#7c3aed', accent: '#facc15', neutral: '#1e293b' }
+    return NextResponse.json({ sponsors, testimonials, slides, stats, about, events, theme: theme ?? defaultTheme })
   } catch (err) {
     console.error('[/api/public/site]', err)
-    return NextResponse.json({ sponsors: [], testimonials: [], slides: [], stats: [], about: [], events: [] })
+    return NextResponse.json({ sponsors: [], testimonials: [], slides: [], stats: [], about: [], events: [], theme: { primary: '#6366f1', secondary: '#7c3aed', accent: '#facc15', neutral: '#1e293b' } })
   }
 }

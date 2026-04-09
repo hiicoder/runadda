@@ -184,3 +184,12 @@ model AboutContent {
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
 }
+
+model SiteTheme {
+  id        String   @id @default(cuid())
+  primary   String   @default("#6366f1") // main brand color (buttons, links)
+  secondary String   @default("#7c3aed") // hero/gradient color
+  accent    String   @default("#facc15") // CTA buttons, highlights
+  neutral   String   @default("#1e293b") // text/dark elements
+  updatedAt DateTime @updatedAt
+}

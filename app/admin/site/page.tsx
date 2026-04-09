@@ -479,6 +479,67 @@ function AboutEditor() {
   )
 }
 
+// ── Theme Editor ──────────────────────────────────────────────────────────────
+function ThemeEditor() {
+  const [colors, setColors] = useState({ primary: '#6366f1', secondary: '#7c3aed', accent: '#facc15', neutral: '#1e293b' })
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/site/theme').then(r => r.json()).then(t => {
+      if (t.primary) setColors({ primary: t.primary, secondary: t.secondary, accent: t.accent, neutral: t.neutral })
+    }).catch(() => {})
+  }, [])
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault(); setSaving(true)
+    await fetch('/api/admin/site/theme', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(colors) })
+    setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2000)
+  }
+
+  const fields = [
+    { key: 'primary', label: 'Primary', desc: 'Buttons, links, nav active state' },
+    { key: 'secondary', label: 'Secondary', desc: 'Hero gradient, admin navbar' },
+    { key: 'accent', label: 'Accent', desc: 'CTA buttons, stats bar, highlights' },
+    { key: 'neutral', label: 'Neutral', desc: 'Dark text, footer, hero overlay' },
+  ] as const
+
+  return (
+    <form onSubmit={save} className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {fields.map(f => (
+          <div key={f.key} className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50">
+            <input type="color" value={colors[f.key]}
+              onChange={e => setColors(c => ({ ...c, [f.key]: e.target.value }))}
+              className="w-12 h-12 rounded-lg border border-gray-300 cursor-pointer p-0.5 bg-white" />
+            <div className="flex-1">
+              <p className="font-semibold text-sm text-gray-900">{f.label}</p>
+              <p className="text-xs text-gray-500">{f.desc}</p>
+              <p className="text-xs font-mono text-gray-400 mt-0.5">{colors[f.key]}</p>
+            </div>
+            <div className="w-8 h-8 rounded-full border border-gray-200 shrink-0" style={{ backgroundColor: colors[f.key] }} />
+          </div>
+        ))}
+      </div>
+
+      {/* Live preview */}
+      <div className="rounded-xl border border-gray-200 overflow-hidden">
+        <p className="text-xs font-semibold text-gray-500 px-3 py-2 bg-gray-50 border-b border-gray-200">Preview</p>
+        <div className="p-4 flex flex-wrap gap-3 items-center" style={{ background: `linear-gradient(135deg, ${colors.neutral}, ${colors.secondary}, ${colors.primary})` }}>
+          <button type="button" className="px-4 py-2 rounded-full text-sm font-bold" style={{ backgroundColor: colors.accent, color: colors.neutral }}>Join Free</button>
+          <button type="button" className="px-4 py-2 rounded-full text-sm font-bold text-white border border-white/30">Sign In</button>
+          <span className="text-white font-black text-lg">Run<span style={{ color: colors.accent }}>adda</span></span>
+        </div>
+      </div>
+
+      <button type="submit" disabled={saving}
+        className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-50">
+        {saved ? '✅ Saved!' : saving ? 'Saving…' : '💾 Save Theme'}
+      </button>
+    </form>
+  )
+}
+
 export default function AdminSitePage() {
   return (
     <div className="space-y-8">
@@ -486,6 +547,11 @@ export default function AdminSitePage() {
         <h1 className="text-2xl font-bold text-gray-900">Landing Page Editor</h1>
         <p className="text-gray-500 text-sm mt-1">Manage what appears on the public Runadda homepage and About page</p>
       </div>
+
+      <Section title="Site Theme Colors" icon="🎨"
+        desc="Choose 4 colors that define your brand. Changes apply instantly across the entire website.">
+        <ThemeEditor />
+      </Section>
 
       <Section title="Stats Bar" icon="📊"
         desc="The 4 numbers shown above the map (e.g. 500+ Members). Add your real stats — until you add any, default values are shown.">

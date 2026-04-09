@@ -2,12 +2,14 @@
 
 import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
+import ThemeProvider, { applyTheme } from "./components/ThemeProvider"
 
 interface Sponsor { id: string; name: string; logo: string; url: string | null }
 interface Testimonial { id: string; name: string; role: string | null; avatar: string | null; quote: string }
 interface Slide { id: string; title: string; subtitle: string | null; imageUrl: string | null; ctaLabel: string | null; ctaUrl: string | null }
 interface SiteStat { id: string; value: string; label: string }
-interface SiteData { sponsors: Sponsor[]; testimonials: Testimonial[]; slides: Slide[]; stats: SiteStat[]; events: Event[] }
+interface Theme { primary: string; secondary: string; accent: string; neutral: string }
+interface SiteData { sponsors: Sponsor[]; testimonials: Testimonial[]; slides: Slide[]; stats: SiteStat[]; events: Event[]; theme?: Theme }
 
 interface Event {
   id: string; title: string; description: string | null
@@ -27,7 +29,7 @@ function formatTime(iso: string) {
 // ── Fixed Purple Hero (always shown) ─────────────────────────────────────────
 function PurpleHero() {
   return (
-    <div className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center py-24 px-4 pt-28">
+    <div className="relative bg-hero flex items-center justify-center py-24 px-4 pt-28">
       <div className="text-center text-white max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-5">
           <span>🏃</span> Running Community · Since Day One
@@ -43,8 +45,7 @@ function PurpleHero() {
           Har kadam khushiyon se bhara hai.
         </p>
         <div className="flex gap-3 justify-center mt-8 flex-wrap">
-          <Link href="/register"
-            className="px-7 py-3 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold rounded-full text-sm transition shadow-lg">
+          <Link href="/register" className="btn-accent px-7 py-3 font-bold rounded-full text-sm transition shadow-lg">
             Join the Family 🏃
           </Link>
           <a href="#about"
@@ -135,7 +136,7 @@ const DEFAULT_STATS = [
 function StatsBar({ stats }: { stats: SiteStat[] }) {
   const items = stats.length > 0 ? stats : DEFAULT_STATS
   return (
-    <div className="bg-yellow-400 text-gray-900">
+    <div className="bg-accent text-gray-900">
       <div className="max-w-6xl mx-auto px-4 py-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
         {items.map(s => (
           <div key={s.id}>
@@ -163,8 +164,7 @@ function AboutTeaser() {
               Weekly runs, theme runs, social service drives aur post-run breakfasts — har kadam mein masti hai.
             </p>
           </div>
-          <Link href="/about"
-            className="shrink-0 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full text-sm transition shadow-md whitespace-nowrap">
+          <Link href="/about" className="btn-primary shrink-0 px-6 py-3 text-white font-bold rounded-full text-sm transition shadow-md whitespace-nowrap">
             Read Our Story →
           </Link>
         </div>
@@ -369,7 +369,7 @@ function MapSection({ stats }: { stats: SiteStat[] }) {
 // ── CTA Section ───────────────────────────────────────────────────────────────
 function CTASection() {
   return (
-    <section className="py-20 bg-gradient-to-br from-indigo-600 to-purple-700 text-white text-center">
+    <section className="py-20 bg-hero text-white text-center">
       <div className="max-w-2xl mx-auto px-4">
         <span className="text-5xl">🏃</span>
         <h2 className="text-3xl sm:text-4xl font-black mt-4">Safar Ka Hissa Bano!</h2>
@@ -502,8 +502,11 @@ export default function PublicHome() {
     async function loadData() {
       try {
         const res = await fetch("/api/public/site")
-        if (res.ok) setSiteData(await res.json())
-        else setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
+        if (res.ok) {
+          const data = await res.json()
+          setSiteData(data)
+          if (data.theme) applyTheme(data.theme)
+        } else setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
       } catch {
         setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
       }
@@ -513,6 +516,7 @@ export default function PublicHome() {
 
   return (
     <div className="min-h-screen bg-white">
+      {siteData?.theme && <ThemeProvider theme={siteData.theme} />}
       <Navbar />
       <PurpleHero />
       {siteData && <ImageSlider slides={siteData.slides} />}
