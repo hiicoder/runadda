@@ -16,3 +16,13 @@ export async function GET() {
     return NextResponse.json({ isMember: false, role: "USER" })
   }
 }
+
+export async function DELETE() {
+  try {
+    const session = await getRequiredSession()
+    await prisma.user.delete({ where: { id: session.user.id } })
+    return NextResponse.json({ ok: true })
+  } catch {
+    return NextResponse.json({ error: "Failed to delete account" }, { status: 500 })
+  }
+}

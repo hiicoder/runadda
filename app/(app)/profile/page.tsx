@@ -4,6 +4,7 @@ import StravaStatus from "./StravaStatus"
 import MembershipSection from "./MembershipSection"
 import LeaderboardPreview from "./LeaderboardPreview"
 import EditProfileButton from "./EditProfileButton"
+import DeleteAccountButton from "./DeleteAccountButton"
 
 function formatDistance(m: number) { return (m / 1000).toFixed(2) + " km" }
 function formatPace(spm: number) {
@@ -105,6 +106,9 @@ export default async function ProfilePage() {
 
       {/* Leaderboard preview — members only */}
       {isMember && <LeaderboardPreview />}
+
+      {/* Danger zone */}
+      <DeleteAccountButton />
     </div>
   )
 }

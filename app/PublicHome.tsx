@@ -498,8 +498,24 @@ function Navbar() {
 export default function PublicHome() {
   const [siteData, setSiteData] = useState<SiteData | null>(null)
   const [ready, setReady] = useState(false)
+  const [skipLoader] = useState(() => {
+    if (typeof window === "undefined") return false
+    return sessionStorage.getItem("runadda_loaded") === "1"
+  })
 
   useEffect(() => {
+    // Show cached data instantly on return visits
+    const cached = sessionStorage.getItem("runadda_site_data")
+    if (cached) {
+      try {
+        const data = JSON.parse(cached) as SiteData
+        setSiteData(data)
+        if (data.theme) applyTheme(data.theme)
+        setReady(true)
+      } catch { /* ignore bad cache */ }
+    }
+
+    // Always fetch fresh data in background
     async function loadData() {
       try {
         const res = await fetch("/api/public/site")
@@ -507,11 +523,15 @@ export default function PublicHome() {
           const data = await res.json()
           setSiteData(data)
           if (data.theme) applyTheme(data.theme)
-        } else setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
+          sessionStorage.setItem("runadda_site_data", JSON.stringify(data))
+        } else if (!cached) {
+          setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
+        }
       } catch {
-        setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
+        if (!cached) setSiteData({ sponsors: [], testimonials: [], slides: [], stats: [], events: [] })
       } finally {
         setReady(true)
+        sessionStorage.setItem("runadda_loaded", "1")
       }
     }
     loadData()
@@ -519,23 +539,25 @@ export default function PublicHome() {
 
   return (
     <>
-      {/* Full-screen loader — shown until DB responds */}
-      <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 transition-opacity duration-700 ${ready ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
-        <div className="text-center text-white">
-          <div className="text-6xl font-black mb-2">
-            Run<span className="text-yellow-400">adda</span>
-          </div>
-          <p className="text-white/70 italic text-sm mb-8">&ldquo;Har Kadam Mein Masti&rdquo;</p>
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-            <div className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-            <div className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+      {/* Full-screen loader — shown until DB responds, skipped on return visits */}
+      {!skipLoader && (
+        <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 transition-opacity duration-700 ${ready ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+          <div className="text-center text-white">
+            <div className="text-6xl font-black mb-2">
+              Run<span className="text-yellow-400">adda</span>
+            </div>
+            <p className="text-white/70 italic text-sm mb-8">&ldquo;Har Kadam Me Masti&rdquo;</p>
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Main content — fades in when ready */}
-      <div className={`min-h-screen bg-white transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`}>
+      {/* Main content — fades in when ready, instant on return visits */}
+      <div className={`min-h-screen bg-white transition-opacity duration-500 ${ready || skipLoader ? "opacity-100" : "opacity-0"}`}>
         {siteData?.theme && <ThemeProvider theme={siteData.theme} />}
         <Navbar />
         <PurpleHero />
