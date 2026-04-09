@@ -47,7 +47,7 @@ export default function AboutPage() {
       <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white py-20 px-4 text-center">
         <Link href="/" className="inline-flex items-center gap-1 text-indigo-300 hover:text-white text-sm mb-6 transition">← Back to Home</Link>
         <h1 className="text-4xl sm:text-5xl font-black">About <span className="text-yellow-400">Runadda</span></h1>
-        <p className="text-white/80 mt-3 text-lg italic">&ldquo;Har Kadam Mein Masti&rdquo;</p>
+        <p className="text-white/80 mt-3 text-lg italic">&ldquo;Har Kadam Me Masti&rdquo;</p>
       </div>
 
       {loading ? (

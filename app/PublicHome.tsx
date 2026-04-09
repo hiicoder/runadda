@@ -36,7 +36,7 @@ function PurpleHero() {
           Run<span className="text-yellow-400">adda</span>
         </h1>
         <p className="text-xl sm:text-2xl text-white/90 mt-3 font-semibold italic">
-          &ldquo;Har Kadam Mein Masti&rdquo;
+          &ldquo;Har Kadam Me Masti&rdquo;
         </p>
         <p className="text-white/70 mt-4 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
           Ek vibrant community jahan dosti, masti, fitness aur samajik seva ek saath milte hain.
@@ -341,16 +341,16 @@ function MapSection({ stats }: { stats: SiteStat[] }) {
         </div>
         <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-72 sm:h-96 bg-indigo-50 flex items-center justify-center">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0!2d77.5946!3d12.9716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU4JzE3LjgiTiA3N8KwMzUnNDAuNiJF!5e0!3m2!1sen!2sin!4v1"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3025.6924357493467!2d85.10455715575596!3d25.59910141350518!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed5700277c8757%3A0x3a443830b67385dc!2sPatna%20Zoo%20%2C%20Gate%20no%20-%202!5e0!3m2!1sen!2sin!4v1775738376535!5m2!1sen!2sin"
             width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
             referrerPolicy="no-referrer-when-downgrade" title="Runadda Running Routes"
           />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
           {[
-            { icon: "📍", title: "Main Start Point", desc: "Central Park Gate No. 3, every Sunday 6:00 AM" },
-            { icon: "🕕", title: "Weekday Runs", desc: "Tuesday & Thursday, 6:30 AM — City Sports Complex" },
-            { icon: "🚗", title: "Parking Available", desc: "Free parking at all our meeting points" },
+           // { icon: "📍", title: "Main Start Point", desc: "Central Park Gate No. 3, every Sunday 6:00 AM" },
+           // { icon: "🕕", title: "Weekday Runs", desc: "Tuesday & Thursday, 6:30 AM — City Sports Complex" },
+           // { icon: "🚗", title: "Parking Available", desc: "Free parking at all our meeting points" },
           ].map(loc => (
             <div key={loc.title} className="bg-white rounded-xl border border-gray-200 p-4 flex gap-3">
               <span className="text-2xl shrink-0">{loc.icon}</span>
@@ -377,7 +377,7 @@ function CTASection() {
           Agar aap bhi humari masti, daud, friendship aur samajik seva ke safar ka hissa banna chahte hain,
           toh Run Adda ka part ban kar fitness aur seva ke saath chal padiye.
         </p>
-        <p className="text-yellow-300 font-semibold mt-2 italic">&ldquo;Har Kadam Mein Masti&rdquo;</p>
+        <p className="text-yellow-300 font-semibold mt-2 italic">&ldquo;Har Kadam Me Masti&rdquo;</p>
         <div className="flex gap-4 justify-center mt-8 flex-wrap">
           <Link href="/register"
             className="px-8 py-3 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-black rounded-full text-base transition shadow-xl">
@@ -401,7 +401,7 @@ function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
           <div>
             <h3 className="text-white font-black text-xl mb-2">Run<span className="text-yellow-400">adda</span></h3>
-            <p className="text-sm italic text-gray-500">&ldquo;Har Kadam Mein Masti&rdquo;</p>
+            <p className="text-sm italic text-gray-500">&ldquo;Har Kadam Me Masti&rdquo;</p>
             <p className="text-sm mt-3">A community of passionate runners, cyclists, and fitness enthusiasts.</p>
           </div>
           <div>
@@ -418,11 +418,11 @@ function Footer() {
             <h4 className="text-white font-semibold mb-3">Follow Us</h4>
             <div className="flex gap-3 flex-wrap">
               {[
-                { icon: "📘", label: "Facebook", href: "#" },
-                { icon: "📸", label: "Instagram", href: "#" },
-                { icon: "🐦", label: "Twitter", href: "#" },
-                { icon: "▶️", label: "YouTube", href: "#" },
-                { icon: "💬", label: "WhatsApp", href: "#" },
+                { icon: "📘", label: "Facebook", href: "https://l1nk.dev/482objz" },
+                { icon: "📸", label: "Instagram", href: "https://acesse.one/bqd067l" },
+                // { icon: "🐦", label: "Twitter", href: "#" },
+                // { icon: "▶️", label: "YouTube", href: "#" },
+                //{ icon: "💬", label: "Email", href: "runadda.in@gmail.com" },
               ].map(s => (
                 <a key={s.label} href={s.href}
                   className="flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg text-sm transition">
