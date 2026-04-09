@@ -348,9 +348,9 @@ function MapSection({ stats }: { stats: SiteStat[] }) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
           {[
-           // { icon: "📍", title: "Main Start Point", desc: "Central Park Gate No. 3, every Sunday 6:00 AM" },
-           // { icon: "🕕", title: "Weekday Runs", desc: "Tuesday & Thursday, 6:30 AM — City Sports Complex" },
-           // { icon: "🚗", title: "Parking Available", desc: "Free parking at all our meeting points" },
+            { icon: "📍", title: "Main Start Point", desc: "Patna zoo Gate No. 2, every day 5:00 AM to 8:AM" },
+            { icon: "🕕", title: "Daily Runs", desc: "Near Patna zoo Gate No. 2, 5:30 AM" },
+            { icon: "🚗", title: "Parking Available", desc: "Free parking at all our meeting points" },
           ].map(loc => (
             <div key={loc.title} className="bg-white rounded-xl border border-gray-200 p-4 flex gap-3">
               <span className="text-2xl shrink-0">{loc.icon}</span>
