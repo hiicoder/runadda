@@ -372,13 +372,20 @@ function StatsEditor() {
 
 // ── About Content ─────────────────────────────────────────────────────────────
 const ABOUT_SECTIONS = ['intro', 'vision', 'mission', 'value']
+const SECTION_HINTS: Record<string, string> = {
+  intro: 'Main story section — shown as a 2-column layout with text and image.',
+  vision: 'Vision card — shown as a colored gradient card.',
+  mission: 'Mission card — shown as a colored gradient card.',
+  value: 'Core value card — multiple cards shown in a grid. Each can have its own icon.',
+}
+const DEFAULT_ICONS: Record<string, string> = { intro: '🏃', vision: '🎯', mission: '🚀', value: '❤️' }
 
 function AboutEditor() {
-  const [items, setItems] = useState<{ id: string; section: string; title: string; body: string; imageUrl: string | null; order: number; active: boolean }[]>([])
-  const [form, setForm] = useState({ section: "intro", title: "", body: "", imageUrl: "" })
+  const [items, setItems] = useState<{ id: string; section: string; title: string; body: string; icon: string | null; imageUrl: string | null; order: number; active: boolean }[]>([])
+  const [form, setForm] = useState({ section: "intro", title: "", body: "", icon: "", imageUrl: "" })
   const [saving, setSaving] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState({ section: "intro", title: "", body: "", imageUrl: "" })
+  const [editForm, setEditForm] = useState({ section: "intro", title: "", body: "", icon: "", imageUrl: "" })
 
   async function load() { const r = await fetch("/api/admin/site/about"); if (r.ok) setItems(await r.json()) }
   useEffect(() => { void load() }, [])
@@ -386,7 +393,7 @@ function AboutEditor() {
   async function add(e: React.FormEvent) {
     e.preventDefault(); setSaving(true)
     await fetch("/api/admin/site/about", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) })
-    setForm({ section: "intro", title: "", body: "", imageUrl: "" }); await load(); setSaving(false)
+    setForm({ section: "intro", title: "", body: "", icon: "", imageUrl: "" }); await load(); setSaving(false)
   }
 
   async function saveEdit(id: string) {
@@ -413,6 +420,7 @@ function AboutEditor() {
           <select className={inputCls} value={form.section} onChange={e => setForm(f => ({ ...f, section: e.target.value }))}>
             {ABOUT_SECTIONS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
           </select>
+          <p className="text-xs text-gray-400 mt-1">{SECTION_HINTS[form.section]}</p>
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Title *</label>
@@ -422,12 +430,71 @@ function AboutEditor() {
           <label className="block text-xs font-medium text-gray-600 mb-1">Body Text *</label>
           <textarea className={inputCls} placeholder="Content text..." value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} required rows={3} />
         </div>
-        <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Image (optional)</label>
-          <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} folder="about" hint="Recommended: 800×500px. Used as section illustration." />
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">
+            Icon (emoji) — default: {DEFAULT_ICONS[form.section]}
+          </label>
+          <input className={inputCls} placeholder={`Default: ${DEFAULT_ICONS[form.section]}`} value={form.icon} onChange={e => setForm(f => ({ ...f, icon: e.target.value }))} />
+          <p className="text-xs text-gray-400 mt-1">Paste any emoji. Leave blank to use default.</p>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Image (optional — overrides icon)</label>
+          <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} folder="about" hint="If uploaded, image shows instead of icon." />
         </div>
         <button type="submit" disabled={saving} className="sm:col-span-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-50">
           {saving ? "Adding…" : "➕ Add Content Block"}
+        </button>
+      </form>
+      <DummyNotice items={items} />
+      <div className="space-y-2">
+        {items.map(item => (
+          <div key={item.id} className={`rounded-xl border ${item.active ? "border-gray-200 bg-gray-50" : "border-gray-100 opacity-50"}`}>
+            {editId === item.id ? (
+              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <select className={inputCls} value={editForm.section} onChange={e => setEditForm(f => ({ ...f, section: e.target.value }))}>
+                  {ABOUT_SECTIONS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                </select>
+                <input className={inputCls} value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} placeholder="Title" />
+                <div className="sm:col-span-2">
+                  <textarea className={inputCls} value={editForm.body} onChange={e => setEditForm(f => ({ ...f, body: e.target.value }))} placeholder="Body text" rows={3} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Icon (emoji)</label>
+                  <input className={inputCls} value={editForm.icon} onChange={e => setEditForm(f => ({ ...f, icon: e.target.value }))} placeholder={`Default: ${DEFAULT_ICONS[editForm.section]}`} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Image (optional)</label>
+                  <ImageUpload value={editForm.imageUrl} onChange={v => setEditForm(f => ({ ...f, imageUrl: v }))} folder="about" hint="Overrides icon if uploaded." />
+                </div>
+                <div className="sm:col-span-2 flex gap-2">
+                  <button onClick={() => saveEdit(item.id)} className={`${btnSm} bg-violet-600 text-white hover:bg-violet-700`}>Save</button>
+                  <button onClick={() => setEditId(null)} className={`${btnSm} bg-gray-100 text-gray-700 hover:bg-gray-200`}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <div className="p-3 flex items-start gap-3">
+                <div className="text-2xl shrink-0">{item.imageUrl ? "🖼️" : (item.icon || DEFAULT_ICONS[item.section])}</div>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${sectionColors[item.section] ?? 'bg-gray-100 text-gray-600'}`}>{item.section}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm text-gray-900">{item.title}</p>
+                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{item.body}</p>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <button onClick={() => { setEditId(item.id); setEditForm({ section: item.section, title: item.title, body: item.body, icon: item.icon ?? "", imageUrl: item.imageUrl ?? "" }) }}
+                    className={`${btnSm} bg-indigo-50 text-indigo-600 hover:bg-indigo-100`}>✏️ Edit</button>
+                  <button onClick={() => toggle(item.id, !item.active)} className={`${btnSm} border border-gray-200 hover:bg-gray-100 text-gray-600`}>
+                    {item.active ? "Hide" : "Show"}
+                  </button>
+                  <button onClick={() => del(item.id)} className={`${btnSm} bg-red-50 text-red-600 hover:bg-red-100`}>Delete</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
         </button>
       </form>
       <DummyNotice items={items} />

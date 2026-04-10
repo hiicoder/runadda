@@ -31,7 +31,7 @@ function formatTime(iso: string) {
 // ── Fixed Purple Hero ─────────────────────────────────────────────────────────
 function PurpleHero() {
   return (
-    <div className="relative bg-hero flex items-center justify-center min-h-screen px-4 pt-20 pb-16">
+    <div className="relative bg-hero flex items-center justify-center px-4 pt-20 pb-16" style={{ minHeight: "100dvh" }}>
       <div className="text-center text-white max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-5">
           <span>🏃</span> Running Community · Since Day One
@@ -93,7 +93,7 @@ function ImageSlider({ slides }: { slides: Slide[] }) {
   ]
 
   return (
-    <section id="gallery" className="relative min-h-screen overflow-hidden">
+    <section id="gallery" className="relative overflow-hidden" style={{ height: "100dvh", minHeight: "500px" }}>
       {allSlides.map((slide, i) => (
         <div key={slide.id} className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? "opacity-100" : "opacity-0"}`}>
           {slide.imageUrl ? (

@@ -179,6 +179,7 @@ model AboutContent {
   section     String   // 'intro' | 'vision' | 'mission' | 'value'
   title       String
   body        String
+  icon        String?  // emoji icon e.g. "🏃"
   imageUrl    String?
   order       Int      @default(0)
   active      Boolean  @default(true)
