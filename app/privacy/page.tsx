@@ -1,8 +1,10 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 
-export const metadata = {
-  title: "Privacy Policy — RunAdda",
-  description: "Privacy policy for RunAdda running community app.",
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Privacy policy for RunAdda running community app. Learn how we collect, use and protect your data.",
+  alternates: { canonical: "https://runadda.in/privacy" },
 }
 
 export default function PrivacyPage() {
