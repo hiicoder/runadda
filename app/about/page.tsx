@@ -32,8 +32,7 @@ export default function AboutPage() {
       const cached = sessionStorage.getItem(CACHE_KEY)
       if (cached) {
         const d = JSON.parse(cached) as SiteData
-        setItems(d.about?.length ? d.about : DEFAULT_CONTENT)
-        if (d.theme) setTheme(d.theme)
+        mergeContent(d)
         setLoading(false)
       }
     } catch { /* ignore */ }
@@ -42,13 +41,30 @@ export default function AboutPage() {
     fetch("/api/public/site")
       .then(r => r.json() as Promise<SiteData>)
       .then(d => {
-        setItems(d.about?.length ? d.about : DEFAULT_CONTENT)
-        if (d.theme) setTheme(d.theme)
+        mergeContent(d)
         setLoading(false)
         sessionStorage.setItem(CACHE_KEY, JSON.stringify(d))
       })
       .catch(() => { setItems(DEFAULT_CONTENT); setLoading(false) })
   }, [])
+
+  // Merge DB content with defaults — only replace sections that have DB data
+  function mergeContent(d: SiteData) {
+    if (!d.theme) return setItems(DEFAULT_CONTENT)
+    if (d.theme) setTheme(d.theme)
+
+    const dbItems = d.about ?? []
+    const dbSections = new Set(dbItems.map(i => i.section))
+
+    // For each section: use DB data if exists, else use defaults for that section
+    const merged = [
+      ...(dbSections.has("intro") ? dbItems.filter(i => i.section === "intro") : DEFAULT_CONTENT.filter(i => i.section === "intro")),
+      ...(dbSections.has("vision") ? dbItems.filter(i => i.section === "vision") : DEFAULT_CONTENT.filter(i => i.section === "vision")),
+      ...(dbSections.has("mission") ? dbItems.filter(i => i.section === "mission") : DEFAULT_CONTENT.filter(i => i.section === "mission")),
+      ...(dbSections.has("value") ? dbItems.filter(i => i.section === "value") : DEFAULT_CONTENT.filter(i => i.section === "value")),
+    ]
+    setItems(merged.length ? merged : DEFAULT_CONTENT)
+  }
 
   const intro = items.filter(i => i.section === "intro")
   const vision = items.filter(i => i.section === "vision")

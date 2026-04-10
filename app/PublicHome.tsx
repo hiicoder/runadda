@@ -31,7 +31,7 @@ function formatTime(iso: string) {
 // ── Fixed Purple Hero ─────────────────────────────────────────────────────────
 function PurpleHero() {
   return (
-    <div className="relative bg-hero flex items-center justify-center px-4 pt-20 pb-16" style={{ minHeight: "100dvh" }}>
+    <div className="relative bg-hero flex items-center justify-center px-4 pt-20 pb-16" style={{ minHeight: "100svh" }}>
       <div className="text-center text-white max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-5">
           <span>🏃</span> Running Community · Since Day One
@@ -93,13 +93,13 @@ function ImageSlider({ slides }: { slides: Slide[] }) {
   ]
 
   return (
-    <section id="gallery" className="relative overflow-hidden" style={{ height: "100dvh", minHeight: "500px" }}>
+    <section id="gallery" className="relative overflow-hidden w-full" style={{ height: "100svh", minHeight: "480px" }}>
       {allSlides.map((slide, i) => (
         <div key={slide.id} className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? "opacity-100" : "opacity-0"}`}>
           {slide.imageUrl ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={slide.imageUrl} alt={slide.title} className="w-full h-full object-cover" />
+              <img src={slide.imageUrl} alt={slide.title} className="absolute inset-0 w-full h-full object-cover object-center" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             </>
           ) : (
