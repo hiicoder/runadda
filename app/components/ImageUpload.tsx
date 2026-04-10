@@ -6,7 +6,7 @@ import Image from "next/image"
 interface ImageUploadProps {
   value: string
   onChange: (url: string) => void
-  folder: "events" | "slides" | "about" | "testimonials"
+  folder: "events" | "slides" | "about" | "testimonials" | "sponsors"
   hint?: string
   preview?: "landscape" | "square"
 }
