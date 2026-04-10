@@ -495,54 +495,6 @@ function AboutEditor() {
     </div>
   )
 }
-        </button>
-      </form>
-      <DummyNotice items={items} />
-      <div className="space-y-2">
-        {items.map(item => (
-          <div key={item.id} className={`rounded-xl border ${item.active ? "border-gray-200 bg-gray-50" : "border-gray-100 opacity-50"}`}>
-            {editId === item.id ? (
-              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <select className={inputCls} value={editForm.section} onChange={e => setEditForm(f => ({ ...f, section: e.target.value }))}>
-                  {ABOUT_SECTIONS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-                </select>
-                <input className={inputCls} value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} placeholder="Title" />
-                <div className="sm:col-span-2">
-                  <textarea className={inputCls} value={editForm.body} onChange={e => setEditForm(f => ({ ...f, body: e.target.value }))} placeholder="Body text" rows={3} />
-                </div>
-                <div className="sm:col-span-2">
-                  <ImageUpload value={editForm.imageUrl} onChange={v => setEditForm(f => ({ ...f, imageUrl: v }))} folder="about" hint="Recommended: 800×500px." />
-                </div>
-                <div className="sm:col-span-2 flex gap-2">
-                  <button onClick={() => saveEdit(item.id)} className={`${btnSm} bg-violet-600 text-white hover:bg-violet-700`}>Save</button>
-                  <button onClick={() => setEditId(null)} className={`${btnSm} bg-gray-100 text-gray-700 hover:bg-gray-200`}>Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <div className="p-3 flex items-start gap-3">
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${sectionColors[item.section] ?? 'bg-gray-100 text-gray-600'}`}>{item.section}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-gray-900">{item.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{item.body}</p>
-                  {item.imageUrl && <p className="text-xs text-indigo-500 mt-0.5 truncate">🖼️ {item.imageUrl}</p>}
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <button onClick={() => { setEditId(item.id); setEditForm({ section: item.section, title: item.title, body: item.body, imageUrl: item.imageUrl ?? "" }) }}
-                    className={`${btnSm} bg-indigo-50 text-indigo-600 hover:bg-indigo-100`}>✏️ Edit</button>
-                  <button onClick={() => toggle(item.id, !item.active)} className={`${btnSm} border border-gray-200 hover:bg-gray-100 text-gray-600`}>
-                    {item.active ? "Hide" : "Show"}
-                  </button>
-                  <button onClick={() => del(item.id)} className={`${btnSm} bg-red-50 text-red-600 hover:bg-red-100`}>Delete</button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 // ── Theme Editor ──────────────────────────────────────────────────────────────
 interface SiteTheme { id: string; name: string; primary: string; secondary: string; accent: string; neutral: string; isActive: boolean }
 
