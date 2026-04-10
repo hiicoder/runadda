@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import ImageUpload from "@/app/components/ImageUpload"
 
 interface Sponsor { id: string; name: string; logo: string; url: string | null; order: number; active: boolean }
 interface Testimonial { id: string; name: string; role: string | null; avatar: string | null; quote: string; order: number; active: boolean }
@@ -242,8 +243,7 @@ function SlidesEditor() {
         <input className={inputCls} placeholder="Title *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required />
         <input className={inputCls} placeholder="Subtitle (optional)" value={form.subtitle} onChange={e => setForm(f => ({ ...f, subtitle: e.target.value }))} />
         <div>
-          <input className={inputCls} placeholder="Image URL (paste a photo link)" value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} />
-          <ImgHint text="Best size: 1280×480px (landscape). JPEG or PNG. Max 5MB." />
+          <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} folder="slides" hint="Best size: 1280×480px (landscape)." />
         </div>
         <input className={inputCls} placeholder="CTA Button Label (e.g. Join Now)" value={form.ctaLabel} onChange={e => setForm(f => ({ ...f, ctaLabel: e.target.value }))} />
         <input className={inputCls} placeholder="CTA URL (e.g. /register)" value={form.ctaUrl} onChange={e => setForm(f => ({ ...f, ctaUrl: e.target.value }))} />
@@ -260,8 +260,7 @@ function SlidesEditor() {
                 <input className={inputCls} value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} placeholder="Title" />
                 <input className={inputCls} value={editForm.subtitle} onChange={e => setEditForm(f => ({ ...f, subtitle: e.target.value }))} placeholder="Subtitle" />
                 <div>
-                  <input className={inputCls} value={editForm.imageUrl} onChange={e => setEditForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="Image URL" />
-                  <ImgHint text="Best size: 1280×480px (landscape). JPEG or PNG." />
+                  <ImageUpload value={editForm.imageUrl} onChange={v => setEditForm(f => ({ ...f, imageUrl: v }))} folder="slides" hint="Best size: 1280×480px." />
                 </div>
                 <input className={inputCls} value={editForm.ctaLabel} onChange={e => setEditForm(f => ({ ...f, ctaLabel: e.target.value }))} placeholder="CTA Label" />
                 <input className={inputCls} value={editForm.ctaUrl} onChange={e => setEditForm(f => ({ ...f, ctaUrl: e.target.value }))} placeholder="CTA URL" />
@@ -424,9 +423,8 @@ function AboutEditor() {
           <textarea className={inputCls} placeholder="Content text..." value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} required rows={3} />
         </div>
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Image URL (optional)</label>
-          <input className={inputCls} placeholder="https://..." value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} />
-          <ImgHint text="Recommended: 800×500px. Used as section illustration." />
+          <label className="block text-xs font-medium text-gray-600 mb-1">Image (optional)</label>
+          <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} folder="about" hint="Recommended: 800×500px. Used as section illustration." />
         </div>
         <button type="submit" disabled={saving} className="sm:col-span-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-50">
           {saving ? "Adding…" : "➕ Add Content Block"}
@@ -446,8 +444,7 @@ function AboutEditor() {
                   <textarea className={inputCls} value={editForm.body} onChange={e => setEditForm(f => ({ ...f, body: e.target.value }))} placeholder="Body text" rows={3} />
                 </div>
                 <div className="sm:col-span-2">
-                  <input className={inputCls} value={editForm.imageUrl} onChange={e => setEditForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="Image URL" />
-                  <ImgHint text="Recommended: 800×500px." />
+                  <ImageUpload value={editForm.imageUrl} onChange={v => setEditForm(f => ({ ...f, imageUrl: v }))} folder="about" hint="Recommended: 800×500px." />
                 </div>
                 <div className="sm:col-span-2 flex gap-2">
                   <button onClick={() => saveEdit(item.id)} className={`${btnSm} bg-violet-600 text-white hover:bg-violet-700`}>Save</button>
