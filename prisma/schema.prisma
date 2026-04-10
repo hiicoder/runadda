@@ -137,6 +137,7 @@ model Sponsor {
   name      String
   logo      String
   url       String?
+  showName  Boolean  @default(true)
   order     Int      @default(0)
   active    Boolean  @default(true)
   createdAt DateTime @default(now())

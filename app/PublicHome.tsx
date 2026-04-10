@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import ThemeProvider, { applyTheme } from "./components/ThemeProvider"
 
-interface Sponsor { id: string; name: string; logo: string; url: string | null }
+interface Sponsor { id: string; name: string; logo: string; url: string | null; showName?: boolean }
 interface Testimonial { id: string; name: string; role: string | null; avatar: string | null; quote: string }
 interface Slide { id: string; title: string; subtitle: string | null; imageUrl: string | null; ctaLabel: string | null; ctaUrl: string | null }
 interface SiteStat { id: string; value: string; label: string }
@@ -297,16 +297,17 @@ function SponsorsSection({ sponsors }: { sponsors: Sponsor[] }) {
     <section className="py-12 bg-white border-t border-gray-100">
       <div className="max-w-6xl mx-auto px-4">
         <p className="text-center text-xs font-bold uppercase tracking-widest text-gray-400 mb-8">Our Sponsors & Partners</p>
-        <div className="flex flex-wrap items-center justify-center gap-8">
+        <div className="flex flex-wrap items-center justify-center gap-10">
           {items.map(s => (
             <a key={s.id} href={s.url ?? "#"} target={s.url ? "_blank" : undefined} rel="noopener noreferrer"
-              className="flex items-center gap-2 text-gray-400 hover:text-gray-700 transition cursor-pointer">
+              className="flex flex-col items-center gap-2 transition hover:opacity-80 cursor-pointer">
               {s.logo.startsWith("http") ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={s.logo} alt={s.name} className="h-10 w-auto object-contain grayscale hover:grayscale-0 transition" />
+                <img src={s.logo} alt={s.name} className="h-16 w-auto max-w-[120px] object-contain" />
               ) : (
-                <><span className="text-3xl">{s.logo}</span><span className="font-bold text-sm">{s.name}</span></>
+                <span className="text-5xl">{s.logo}</span>
               )}
+              {(s.showName !== false) && <span className="font-semibold text-sm text-gray-600">{s.name}</span>}
             </a>
           ))}
         </div>

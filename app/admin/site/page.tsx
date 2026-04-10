@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import ImageUpload from "@/app/components/ImageUpload"
 
-interface Sponsor { id: string; name: string; logo: string; url: string | null; order: number; active: boolean }
+interface Sponsor { id: string; name: string; logo: string; url: string | null; showName: boolean; order: number; active: boolean }
 interface Testimonial { id: string; name: string; role: string | null; avatar: string | null; quote: string; order: number; active: boolean }
 interface Slide { id: string; title: string; subtitle: string | null; imageUrl: string | null; ctaLabel: string | null; ctaUrl: string | null; order: number; active: boolean }
 
@@ -46,10 +46,10 @@ function DummyNotice({ items }: { items: unknown[] }) {
 // ── Sponsors ──────────────────────────────────────────────────────────────────
 function SponsorsEditor() {
   const [items, setItems] = useState<Sponsor[]>([])
-  const [form, setForm] = useState({ name: "", logo: "", url: "" })
+  const [form, setForm] = useState({ name: "", logo: "", url: "", showName: true })
   const [saving, setSaving] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState({ name: "", logo: "", url: "" })
+  const [editForm, setEditForm] = useState({ name: "", logo: "", url: "", showName: true })
 
   async function load() { const r = await fetch("/api/admin/site/sponsors"); if (r.ok) setItems(await r.json()) }
   useEffect(() => { void load() }, [])
@@ -57,7 +57,7 @@ function SponsorsEditor() {
   async function add(e: React.FormEvent) {
     e.preventDefault(); setSaving(true)
     await fetch("/api/admin/site/sponsors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) })
-    setForm({ name: "", logo: "", url: "" }); await load(); setSaving(false)
+    setForm({ name: "", logo: "", url: "", showName: true }); await load(); setSaving(false)
   }
 
   async function saveEdit(id: string) {
@@ -97,6 +97,11 @@ function SponsorsEditor() {
             </div>
           </div>
         </div>
+        <div className="sm:col-span-2 flex items-center gap-2">
+          <input type="checkbox" id="showName" checked={form.showName} onChange={e => setForm(f => ({ ...f, showName: e.target.checked }))}
+            className="w-4 h-4 rounded cursor-pointer" />
+          <label htmlFor="showName" className="text-sm text-gray-700 cursor-pointer">Show sponsor name below logo</label>
+        </div>
         <button type="submit" disabled={saving} className="sm:col-span-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-50">
           {saving ? "Adding…" : "➕ Add Sponsor"}
         </button>
@@ -121,6 +126,11 @@ function SponsorsEditor() {
                     </div>
                   </div>
                 </div>
+                <div className="sm:col-span-2 flex items-center gap-2 mt-1">
+                  <input type="checkbox" checked={editForm.showName} onChange={e => setEditForm(f => ({ ...f, showName: e.target.checked }))}
+                    className="w-4 h-4 rounded cursor-pointer" />
+                  <label className="text-sm text-gray-700 cursor-pointer">Show sponsor name below logo</label>
+                </div>
                 <div className="sm:col-span-2 flex gap-2">
                   <button onClick={() => saveEdit(s.id)} className={`${btnSm} bg-violet-600 text-white hover:bg-violet-700`}>Save</button>
                   <button onClick={() => setEditId(null)} className={`${btnSm} bg-gray-100 text-gray-700 hover:bg-gray-200`}>Cancel</button>
@@ -136,9 +146,10 @@ function SponsorsEditor() {
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm text-gray-900">{s.name}</p>
+                  <p className="text-xs text-gray-400">{s.showName ? "Name visible" : "Logo only"}</p>
                   {s.url && <p className="text-xs text-gray-400 truncate">{s.url}</p>}
                 </div>
-                <button onClick={() => { setEditId(s.id); setEditForm({ name: s.name, logo: s.logo, url: s.url ?? "" }) }}
+                <button onClick={() => { setEditId(s.id); setEditForm({ name: s.name, logo: s.logo, url: s.url ?? "", showName: s.showName }) }}
                   className={`${btnSm} bg-indigo-50 text-indigo-600 hover:bg-indigo-100`}>✏️ Edit</button>
                 <button onClick={() => toggle(s.id, !s.active)} className={`${btnSm} border border-gray-200 hover:bg-gray-100 text-gray-600`}>
                   {s.active ? "Hide" : "Show"}
