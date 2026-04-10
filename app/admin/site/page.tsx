@@ -243,7 +243,7 @@ function SlidesEditor() {
         <input className={inputCls} placeholder="Title *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required />
         <input className={inputCls} placeholder="Subtitle (optional)" value={form.subtitle} onChange={e => setForm(f => ({ ...f, subtitle: e.target.value }))} />
         <div>
-          <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} folder="slides" hint="Best size: 1280×480px (landscape)." />
+          <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} folder="slides" hint="Best size: 1920×1080px (full screen). Portrait or landscape. Image fills the entire hero — avoid text-heavy photos." />
         </div>
         <input className={inputCls} placeholder="CTA Button Label (e.g. Join Now)" value={form.ctaLabel} onChange={e => setForm(f => ({ ...f, ctaLabel: e.target.value }))} />
         <input className={inputCls} placeholder="CTA URL (e.g. /register)" value={form.ctaUrl} onChange={e => setForm(f => ({ ...f, ctaUrl: e.target.value }))} />
@@ -260,7 +260,7 @@ function SlidesEditor() {
                 <input className={inputCls} value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} placeholder="Title" />
                 <input className={inputCls} value={editForm.subtitle} onChange={e => setEditForm(f => ({ ...f, subtitle: e.target.value }))} placeholder="Subtitle" />
                 <div>
-                  <ImageUpload value={editForm.imageUrl} onChange={v => setEditForm(f => ({ ...f, imageUrl: v }))} folder="slides" hint="Best size: 1280×480px." />
+                  <ImageUpload value={editForm.imageUrl} onChange={v => setEditForm(f => ({ ...f, imageUrl: v }))} folder="slides" hint="Best size: 1920×1080px (full screen)." />
                 </div>
                 <input className={inputCls} value={editForm.ctaLabel} onChange={e => setEditForm(f => ({ ...f, ctaLabel: e.target.value }))} placeholder="CTA Label" />
                 <input className={inputCls} value={editForm.ctaUrl} onChange={e => setEditForm(f => ({ ...f, ctaUrl: e.target.value }))} placeholder="CTA URL" />

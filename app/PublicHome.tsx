@@ -28,10 +28,52 @@ function formatTime(iso: string) {
 }
 
 // ── Fixed Purple Hero (always shown) ─────────────────────────────────────────
-function PurpleHero() {
+// ── Hero + Slider merged into one full-screen component ──────────────────────
+function HeroSlider({ slides }: { slides: Slide[] }) {
+  const [current, setCurrent] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const placeholders = [
+    { id: "p1", title: "Our Morning Runs 🌅", subtitle: "Every Sunday at 6 AM", imageUrl: null, ctaLabel: null, ctaUrl: null },
+    { id: "p2", title: "Club Celebrations 🎉", subtitle: "We run, we celebrate!", imageUrl: null, ctaLabel: null, ctaUrl: null },
+    { id: "p3", title: "Trail Adventures 🥾", subtitle: "Explore the outdoors with us", imageUrl: null, ctaLabel: null, ctaUrl: null },
+  ]
+  const allSlides = slides.length > 0 ? slides : placeholders
+
+  useEffect(() => {
+    setCurrent(0)
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => setCurrent(c => (c + 1) % allSlides.length), 5000)
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [allSlides.length])
+
+  const gradients = [
+    "from-indigo-900 via-purple-900 to-indigo-800",
+    "from-pink-900 via-rose-800 to-orange-700",
+    "from-emerald-900 via-teal-800 to-cyan-700",
+    "from-amber-900 via-orange-800 to-yellow-700",
+    "from-violet-900 via-indigo-800 to-blue-700",
+  ]
+
   return (
-    <div className="relative bg-hero flex items-center justify-center py-24 px-4 pt-28">
-      <div className="text-center text-white max-w-3xl mx-auto">
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Slide backgrounds */}
+      {allSlides.map((slide, i) => (
+        <div key={slide.id} className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? "opacity-100" : "opacity-0"}`}>
+          {slide.imageUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={slide.imageUrl} alt={slide.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
+            </>
+          ) : (
+            <div className={`w-full h-full bg-gradient-to-br ${gradients[i % gradients.length]}`} />
+          )}
+        </div>
+      ))}
+
+      {/* Hero content — centered over slides */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 pt-20 pb-24 text-center text-white">
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-5">
           <span>🏃</span> Running Community · Since Day One
         </div>
@@ -49,78 +91,30 @@ function PurpleHero() {
           <Link href="/register" className="btn-accent px-7 py-3 font-bold rounded-full text-sm transition shadow-lg">
             Join the Family 🏃
           </Link>
-          <a href="#about"
-            className="px-7 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 text-white font-semibold rounded-full text-sm transition">
+          <a href="#about" className="px-7 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 text-white font-semibold rounded-full text-sm transition">
             Our Story →
           </a>
         </div>
-      </div>
-    </div>
-  )
-}
 
-// ── Image Slider (below hero) — shows custom slides from admin, or placeholder ──
-function ImageSlider({ slides }: { slides: Slide[] }) {
-  const [current, setCurrent] = useState(0)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  // Show ALL active slides (with or without image), fall back to placeholders
-  const placeholders = [
-    { id: "p1", title: "Our Morning Runs 🌅", subtitle: "Every Sunday at 6 AM", imageUrl: null, ctaLabel: null, ctaUrl: null },
-    { id: "p2", title: "Club Celebrations 🎉", subtitle: "We run, we celebrate!", imageUrl: null, ctaLabel: null, ctaUrl: null },
-    { id: "p3", title: "Trail Adventures 🥾", subtitle: "Explore the outdoors with us", imageUrl: null, ctaLabel: null, ctaUrl: null },
-  ]
-
-  const allSlides = slides.length > 0 ? slides : placeholders
-
-  // Restart timer whenever slide count changes (e.g. after data loads)
-  useEffect(() => {
-    setCurrent(0)
-    if (timerRef.current) clearInterval(timerRef.current)
-    timerRef.current = setInterval(() => setCurrent(c => (c + 1) % allSlides.length), 4000)
-    return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  }, [allSlides.length])
-
-  const gradients = [
-    "from-pink-500 to-orange-400",
-    "from-violet-500 to-indigo-500",
-    "from-emerald-500 to-teal-400",
-    "from-amber-500 to-rose-400",
-    "from-cyan-500 to-blue-500",
-  ]
-
-  return (
-    <div className="relative h-64 sm:h-80 overflow-hidden bg-gray-900">
-      {allSlides.map((slide, i) => (
-        <div key={slide.id} className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? "opacity-100" : "opacity-0"}`}>
-          {slide.imageUrl ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={slide.imageUrl} alt={slide.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-            </>
-          ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${gradients[i % gradients.length]} flex items-center justify-center`}>
-              <div className="text-center text-white px-6 opacity-60">
-                <p className="text-5xl mb-2">📸</p>
-                <p className="text-xs font-medium">Add photos via Admin → Site Editor</p>
-              </div>
-            </div>
+        {/* Slide caption */}
+        <div className="absolute bottom-16 left-6 right-6 text-left max-w-lg">
+          {allSlides[current]?.subtitle && (
+            <p className="text-sm text-white/70 drop-shadow">{allSlides[current].subtitle}</p>
           )}
-          <div className="absolute bottom-6 left-6 right-6 text-white">
-            <p className="font-bold text-lg drop-shadow">{slide.title}</p>
-            {slide.subtitle && <p className="text-sm text-white/80 mt-0.5">{slide.subtitle}</p>}
-            {slide.ctaLabel && slide.ctaUrl && (
-              <a href={slide.ctaUrl} className="inline-block mt-2 px-4 py-1.5 bg-yellow-400 text-gray-900 font-bold rounded-full text-xs">{slide.ctaLabel}</a>
-            )}
-          </div>
+          {allSlides[current]?.ctaLabel && allSlides[current]?.ctaUrl && (
+            <a href={allSlides[current].ctaUrl!} className="inline-block mt-2 px-4 py-1.5 bg-yellow-400 text-gray-900 font-bold rounded-full text-xs">
+              {allSlides[current].ctaLabel}
+            </a>
+          )}
         </div>
-      ))}
-      <div className="absolute bottom-3 right-4 flex gap-1.5">
-        {allSlides.map((_, i) => (
-          <button key={i} onClick={() => setCurrent(i)}
-            className={`w-2 h-2 rounded-full transition cursor-pointer ${i === current ? "bg-white" : "bg-white/40"}`} />
-        ))}
+
+        {/* Slide dots */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+          {allSlides.map((_, i) => (
+            <button key={i} onClick={() => setCurrent(i)}
+              className={`rounded-full transition-all cursor-pointer ${i === current ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/40"}`} />
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -634,8 +628,7 @@ export default function PublicHome() {
       <div className={`min-h-screen bg-white transition-opacity duration-500 ${ready || skipLoader ? "opacity-100" : "opacity-0"}`}>
         {siteData?.theme && <ThemeProvider theme={siteData.theme} />}
         <Navbar />
-        <PurpleHero />
-        {siteData && <ImageSlider slides={siteData.slides} />}
+        <HeroSlider slides={siteData?.slides ?? []} />
         <AboutTeaser />
         <EventsSection events={siteData?.events ?? []} />
         <ActivitiesSection />

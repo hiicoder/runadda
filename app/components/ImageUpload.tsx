@@ -65,7 +65,7 @@ export default function ImageUpload({ value, onChange, folder, hint, preview = "
 
       {error && <p className="text-xs text-red-600">⚠️ {error}</p>}
       {hint && <p className="text-xs text-gray-400">💡 {hint}</p>}
-      <p className="text-xs text-gray-300">Max 3MB · JPEG, PNG, WebP</p>
+      <p className="text-xs text-gray-300">Max 8MB · JPEG, PNG, WebP</p>
     </div>
   )
 }

@@ -4,7 +4,7 @@
  * Folders: events/, slides/, testimonials/, about/
  */
 
-const MAX_FILE_SIZE = 3 * 1024 * 1024 // 3 MB
+const MAX_FILE_SIZE = 8 * 1024 * 1024 // 8 MB
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
 
 export class ImageUploadError extends Error {
@@ -16,7 +16,7 @@ export class ImageUploadError extends Error {
 
 export function validateImageFile(file: File): void {
   if (file.size > MAX_FILE_SIZE) {
-    throw new ImageUploadError("File too large. Max size is 3 MB.")
+    throw new ImageUploadError("File too large. Max size is 8 MB.")
   }
   if (!ALLOWED_TYPES.has(file.type)) {
     throw new ImageUploadError("Only JPEG, PNG, and WebP images are allowed.")
