@@ -301,8 +301,12 @@ function SponsorsSection({ sponsors }: { sponsors: Sponsor[] }) {
           {items.map(s => (
             <a key={s.id} href={s.url ?? "#"} target={s.url ? "_blank" : undefined} rel="noopener noreferrer"
               className="flex items-center gap-2 text-gray-400 hover:text-gray-700 transition cursor-pointer">
-              <span className="text-3xl">{s.logo.startsWith("http") ? "🤝" : s.logo}</span>
-              <span className="font-bold text-sm">{s.name}</span>
+              {s.logo.startsWith("http") ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={s.logo} alt={s.name} className="h-10 w-auto object-contain grayscale hover:grayscale-0 transition" />
+              ) : (
+                <><span className="text-3xl">{s.logo}</span><span className="font-bold text-sm">{s.name}</span></>
+              )}
             </a>
           ))}
         </div>

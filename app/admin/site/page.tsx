@@ -76,11 +76,28 @@ function SponsorsEditor() {
 
   return (
     <div className="space-y-4">
-      <form onSubmit={add} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <input className={inputCls} placeholder="Name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
-        <input className={inputCls} placeholder="Logo emoji or URL *" value={form.logo} onChange={e => setForm(f => ({ ...f, logo: e.target.value }))} required />
-        <input className={inputCls} placeholder="Website URL (optional)" value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} />
-        <button type="submit" disabled={saving} className="sm:col-span-3 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-50">
+      <form onSubmit={add} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Sponsor Name *</label>
+          <input className={inputCls} placeholder="e.g. Nike" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Website URL (optional)</label>
+          <input className={inputCls} placeholder="https://sponsor.com" value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="block text-xs font-medium text-gray-600 mb-1">Logo — upload image or enter emoji</label>
+          <div className="flex items-start gap-3">
+            <div className="flex-1">
+              <ImageUpload value={form.logo.startsWith("http") ? form.logo : ""} onChange={v => setForm(f => ({ ...f, logo: v }))} folder="sponsors" hint="Square logo, min 200×200px. PNG with transparent background works best." preview="square" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-gray-500">Or use emoji</label>
+              <input className={`${inputCls} w-20 text-center text-2xl`} placeholder="👟" value={form.logo.startsWith("http") ? "" : form.logo} onChange={e => setForm(f => ({ ...f, logo: e.target.value }))} maxLength={4} />
+            </div>
+          </div>
+        </div>
+        <button type="submit" disabled={saving} className="sm:col-span-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-50">
           {saving ? "Adding…" : "➕ Add Sponsor"}
         </button>
       </form>
@@ -89,18 +106,34 @@ function SponsorsEditor() {
         {items.map(s => (
           <div key={s.id} className={`rounded-xl border ${s.active ? "border-gray-200 bg-gray-50" : "border-gray-100 bg-gray-50 opacity-50"}`}>
             {editId === s.id ? (
-              <div className="p-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <input className={inputCls} value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} placeholder="Name" />
-                <input className={inputCls} value={editForm.logo} onChange={e => setEditForm(f => ({ ...f, logo: e.target.value }))} placeholder="Logo emoji or URL" />
                 <input className={inputCls} value={editForm.url} onChange={e => setEditForm(f => ({ ...f, url: e.target.value }))} placeholder="Website URL" />
-                <div className="sm:col-span-3 flex gap-2">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Logo</label>
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1">
+                      <ImageUpload value={editForm.logo.startsWith("http") ? editForm.logo : ""} onChange={v => setEditForm(f => ({ ...f, logo: v }))} folder="sponsors" hint="Square logo, PNG preferred." preview="square" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-gray-500">Or emoji</label>
+                      <input className={`${inputCls} w-20 text-center text-2xl`} placeholder="👟" value={editForm.logo.startsWith("http") ? "" : editForm.logo} onChange={e => setEditForm(f => ({ ...f, logo: e.target.value }))} maxLength={4} />
+                    </div>
+                  </div>
+                </div>
+                <div className="sm:col-span-2 flex gap-2">
                   <button onClick={() => saveEdit(s.id)} className={`${btnSm} bg-violet-600 text-white hover:bg-violet-700`}>Save</button>
                   <button onClick={() => setEditId(null)} className={`${btnSm} bg-gray-100 text-gray-700 hover:bg-gray-200`}>Cancel</button>
                 </div>
               </div>
             ) : (
               <div className="flex items-center gap-3 p-3">
-                <span className="text-2xl">{s.logo.startsWith("http") ? "🖼️" : s.logo}</span>
+                {s.logo.startsWith("http") ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.logo} alt={s.name} className="w-10 h-10 rounded-lg object-contain bg-white border border-gray-200 p-1 shrink-0" />
+                ) : (
+                  <span className="text-2xl shrink-0">{s.logo || "🤝"}</span>
+                )}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm text-gray-900">{s.name}</p>
                   {s.url && <p className="text-xs text-gray-400 truncate">{s.url}</p>}

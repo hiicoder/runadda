@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdminOrEditor } from "@/lib/auth"
 import { uploadToSupabase, ImageUploadError } from "@/lib/image-service"
 
-const ALLOWED_FOLDERS = ["events", "slides", "about", "testimonials"]
+const ALLOWED_FOLDERS = ["events", "slides", "about", "testimonials", "sponsors"]
 
 export async function POST(req: NextRequest) {
   try {
