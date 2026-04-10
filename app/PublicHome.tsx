@@ -28,8 +28,45 @@ function formatTime(iso: string) {
 }
 
 // ── Fixed Purple Hero (always shown) ─────────────────────────────────────────
-// ── Hero + Slider merged into one full-screen component ──────────────────────
-function HeroSlider({ slides }: { slides: Slide[] }) {
+// ── Fixed Purple Hero ─────────────────────────────────────────────────────────
+function PurpleHero() {
+  return (
+    <div className="relative bg-hero flex items-center justify-center min-h-screen px-4 pt-20 pb-16">
+      <div className="text-center text-white max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-5">
+          <span>🏃</span> Running Community · Since Day One
+        </div>
+        <h1 className="text-5xl sm:text-7xl font-black tracking-tight drop-shadow-lg">
+          Run<span className="text-yellow-400">adda</span>
+        </h1>
+        <p className="text-xl sm:text-2xl text-white/90 mt-3 font-semibold italic">
+          &ldquo;Har Kadam Me Masti&rdquo;
+        </p>
+        <p className="text-white/70 mt-4 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+          Ek vibrant community jahan dosti, masti, fitness aur samajik seva ek saath milte hain.
+          Har kadam khushiyon se bhara hai.
+        </p>
+        <div className="flex gap-3 justify-center mt-8 flex-wrap">
+          <Link href="/register" className="btn-accent px-7 py-3 font-bold rounded-full text-sm transition shadow-lg">
+            Join the Family 🏃
+          </Link>
+          <a href="#about" className="px-7 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 text-white font-semibold rounded-full text-sm transition">
+            Our Story →
+          </a>
+        </div>
+        <div className="mt-12 animate-bounce">
+          <a href="#gallery" className="text-white/50 text-xs flex flex-col items-center gap-1">
+            <span>Scroll to see our moments</span>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Full-screen Image Slider ───────────────────────────────────────────────────
+function ImageSlider({ slides }: { slides: Slide[] }) {
   const [current, setCurrent] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -56,67 +93,53 @@ function HeroSlider({ slides }: { slides: Slide[] }) {
   ]
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Slide backgrounds */}
+    <section id="gallery" className="relative min-h-screen overflow-hidden">
       {allSlides.map((slide, i) => (
         <div key={slide.id} className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? "opacity-100" : "opacity-0"}`}>
           {slide.imageUrl ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={slide.imageUrl} alt={slide.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             </>
           ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${gradients[i % gradients.length]}`} />
+            <div className={`w-full h-full bg-gradient-to-br ${gradients[i % gradients.length]} flex items-center justify-center`}>
+              <div className="text-center text-white/40">
+                <p className="text-6xl mb-3">📸</p>
+                <p className="text-sm font-medium">Add photos via Admin → Site Editor</p>
+              </div>
+            </div>
           )}
         </div>
       ))}
 
-      {/* Hero content — centered over slides */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 pt-20 pb-24 text-center text-white">
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-5">
-          <span>🏃</span> Running Community · Since Day One
-        </div>
-        <h1 className="text-5xl sm:text-7xl font-black tracking-tight drop-shadow-lg">
-          Run<span className="text-yellow-400">adda</span>
-        </h1>
-        <p className="text-xl sm:text-2xl text-white/90 mt-3 font-semibold italic">
-          &ldquo;Har Kadam Me Masti&rdquo;
-        </p>
-        <p className="text-white/70 mt-4 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-          Ek vibrant community jahan dosti, masti, fitness aur samajik seva ek saath milte hain.
-          Har kadam khushiyon se bhara hai.
-        </p>
-        <div className="flex gap-3 justify-center mt-8 flex-wrap">
-          <Link href="/register" className="btn-accent px-7 py-3 font-bold rounded-full text-sm transition shadow-lg">
-            Join the Family 🏃
-          </Link>
-          <a href="#about" className="px-7 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 text-white font-semibold rounded-full text-sm transition">
-            Our Story →
+      {/* Slide text — bottom left */}
+      <div className="absolute bottom-16 left-6 right-6 z-10 text-white max-w-2xl">
+        <p className="text-2xl sm:text-3xl font-black drop-shadow-lg">{allSlides[current]?.title}</p>
+        {allSlides[current]?.subtitle && (
+          <p className="text-base text-white/80 mt-1 drop-shadow">{allSlides[current].subtitle}</p>
+        )}
+        {allSlides[current]?.ctaLabel && allSlides[current]?.ctaUrl && (
+          <a href={allSlides[current].ctaUrl!}
+            className="inline-block mt-3 px-5 py-2 bg-yellow-400 text-gray-900 font-bold rounded-full text-sm">
+            {allSlides[current].ctaLabel}
           </a>
-        </div>
-
-        {/* Slide caption */}
-        <div className="absolute bottom-16 left-6 right-6 text-left max-w-lg">
-          {allSlides[current]?.subtitle && (
-            <p className="text-sm text-white/70 drop-shadow">{allSlides[current].subtitle}</p>
-          )}
-          {allSlides[current]?.ctaLabel && allSlides[current]?.ctaUrl && (
-            <a href={allSlides[current].ctaUrl!} className="inline-block mt-2 px-4 py-1.5 bg-yellow-400 text-gray-900 font-bold rounded-full text-xs">
-              {allSlides[current].ctaLabel}
-            </a>
-          )}
-        </div>
-
-        {/* Slide dots */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
-          {allSlides.map((_, i) => (
-            <button key={i} onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all cursor-pointer ${i === current ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/40"}`} />
-          ))}
-        </div>
+        )}
       </div>
-    </div>
+
+      {/* Dots */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+        {allSlides.map((_, i) => (
+          <button key={i} onClick={() => setCurrent(i)}
+            className={`rounded-full transition-all cursor-pointer ${i === current ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/40"}`} />
+        ))}
+      </div>
+
+      {/* Slide counter */}
+      <div className="absolute top-6 right-6 z-10 text-white/60 text-sm font-medium">
+        {current + 1} / {allSlides.length}
+      </div>
+    </section>
   )
 }
 
@@ -628,7 +651,8 @@ export default function PublicHome() {
       <div className={`min-h-screen bg-white transition-opacity duration-500 ${ready || skipLoader ? "opacity-100" : "opacity-0"}`}>
         {siteData?.theme && <ThemeProvider theme={siteData.theme} />}
         <Navbar />
-        <HeroSlider slides={siteData?.slides ?? []} />
+        <PurpleHero />
+        {siteData && <ImageSlider slides={siteData.slides} />}
         <AboutTeaser />
         <EventsSection events={siteData?.events ?? []} />
         <ActivitiesSection />
