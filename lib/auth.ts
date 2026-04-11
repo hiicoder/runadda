@@ -31,6 +31,12 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
+          // Block login if email not verified
+          if (!user.emailVerified) {
+            console.error("[AUTH] Email not verified:", credentials.email)
+            throw new Error("EMAIL_NOT_VERIFIED")
+          }
+
           const passwordValid = await bcrypt.compare(
             credentials.password,
             user.passwordHash

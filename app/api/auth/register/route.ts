@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       email,
       password,
       options: {
-        emailRedirectTo: `${process.env.NEXTAUTH_URL}/login?verified=true`,
+        emailRedirectTo: `${process.env.NEXTAUTH_URL}/api/auth/verify-email`,
         data: { source: "runadda_registration" },
       },
     })
