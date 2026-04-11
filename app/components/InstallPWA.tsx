@@ -7,22 +7,31 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
 }
 
+type Platform = "android" | "ios" | "desktop" | null
+
+function detectPlatform(): Platform {
+  if (typeof navigator === "undefined") return null
+  const ua = navigator.userAgent
+  if (/android/i.test(ua)) return "android"
+  if (/iphone|ipad|ipod/i.test(ua)) return "ios"
+  return "desktop"
+}
+
+function isStandalone(): boolean {
+  if (typeof window === "undefined") return false
+  return window.matchMedia("(display-mode: standalone)").matches ||
+    (navigator as { standalone?: boolean }).standalone === true
+}
+
+// Inline banner for dashboard
 export default function InstallPWA() {
   const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [installed, setInstalled] = useState(false)
   const [installing, setInstalling] = useState(false)
 
   useEffect(() => {
-    // Check if already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      setInstalled(true)
-      return
-    }
-
-    const handler = (e: Event) => {
-      e.preventDefault()
-      setPrompt(e as BeforeInstallPromptEvent)
-    }
+    if (isStandalone()) { setInstalled(true); return }
+    const handler = (e: Event) => { e.preventDefault(); setPrompt(e as BeforeInstallPromptEvent) }
     window.addEventListener("beforeinstallprompt", handler)
     window.addEventListener("appinstalled", () => { setInstalled(true); setPrompt(null) })
     return () => window.removeEventListener("beforeinstallprompt", handler)
@@ -36,8 +45,7 @@ export default function InstallPWA() {
     await prompt.prompt()
     const { outcome } = await prompt.userChoice
     if (outcome === "accepted") setInstalled(true)
-    setPrompt(null)
-    setInstalling(false)
+    setPrompt(null); setInstalling(false)
   }
 
   return (
@@ -55,6 +63,69 @@ export default function InstallPWA() {
         className="shrink-0 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition cursor-pointer disabled:opacity-60">
         {installing ? "Installing…" : "Install"}
       </button>
+    </div>
+  )
+}
+
+// Floating install button for landing page — works on all platforms
+export function InstallButton({ className }: { className?: string }) {
+  const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const [platform, setPlatform] = useState<Platform>(null)
+  const [installed, setInstalled] = useState(false)
+  const [showIOSGuide, setShowIOSGuide] = useState(false)
+  const [installing, setInstalling] = useState(false)
+
+  useEffect(() => {
+    if (isStandalone()) { setInstalled(true); return }
+    setPlatform(detectPlatform())
+    const handler = (e: Event) => { e.preventDefault(); setPrompt(e as BeforeInstallPromptEvent) }
+    window.addEventListener("beforeinstallprompt", handler)
+    window.addEventListener("appinstalled", () => { setInstalled(true); setPrompt(null) })
+    return () => window.removeEventListener("beforeinstallprompt", handler)
+  }, [])
+
+  if (installed) return null
+
+  async function handleClick() {
+    if (prompt) {
+      setInstalling(true)
+      await prompt.prompt()
+      const { outcome } = await prompt.userChoice
+      if (outcome === "accepted") setInstalled(true)
+      setPrompt(null); setInstalling(false)
+    } else if (platform === "ios") {
+      setShowIOSGuide(v => !v)
+    }
+    // desktop/android without prompt — browser handles it via address bar
+  }
+
+  const label = installing ? "Installing…"
+    : platform === "ios" ? "📲 Install App"
+    : "📲 Install App"
+
+  return (
+    <div className={`relative ${className ?? ""}`}>
+      <button onClick={handleClick} disabled={installing}
+        className="flex items-center gap-2 px-4 py-2 bg-white/15 hover:bg-white/25 backdrop-blur border border-white/30 text-white text-sm font-semibold rounded-full transition cursor-pointer disabled:opacity-60">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        {label}
+      </button>
+
+      {/* iOS install guide tooltip */}
+      {showIOSGuide && (
+        <div className="absolute top-12 right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 z-50 text-gray-800">
+          <p className="font-bold text-sm mb-2">Install on iPhone/iPad</p>
+          <ol className="text-xs space-y-1.5 text-gray-600">
+            <li>1. Tap the <strong>Share</strong> button <span className="text-lg">⎙</span> at the bottom of Safari</li>
+            <li>2. Scroll down and tap <strong>&ldquo;Add to Home Screen&rdquo;</strong></li>
+            <li>3. Tap <strong>Add</strong> — done!</li>
+          </ol>
+          <button onClick={() => setShowIOSGuide(false)}
+            className="mt-3 text-xs text-indigo-600 font-medium cursor-pointer">Got it ✓</button>
+        </div>
+      )}
     </div>
   )
 }

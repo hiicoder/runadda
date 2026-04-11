@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import ThemeProvider, { applyTheme } from "./components/ThemeProvider"
+import { InstallButton } from "./components/InstallPWA"
 
 interface Sponsor { id: string; name: string; logo: string; url: string | null; showName?: boolean }
 interface Testimonial { id: string; name: string; role: string | null; avatar: string | null; quote: string }
@@ -53,6 +54,7 @@ function PurpleHero() {
           <a href="#about" className="px-7 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 text-white font-semibold rounded-full text-sm transition">
             Our Story →
           </a>
+          <InstallButton />
         </div>
         <div className="mt-12 animate-bounce">
           <a href="#gallery" className="text-white/50 text-xs flex flex-col items-center gap-1">
@@ -573,6 +575,7 @@ function Navbar() {
             </Link>
           ) : (
             <>
+              <InstallButton />
               <Link href="/login"
                 className={`text-sm font-semibold px-4 py-2 rounded-full transition ${scrolled ? "text-primary border border-primary/30 hover:bg-primary/10" : "text-white border border-white/30 hover:bg-white/10"}`}>
                 Sign In
