@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { getActivityIcon, getActivityLabel } from "@/lib/activity-types"
+import InstallPWA from "@/app/components/InstallPWA"
 
 function formatDistance(meters: number) { return (meters / 1000).toFixed(2) + " km" }
 function formatPace(spm: number) {
@@ -127,6 +128,8 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-500 text-sm mt-1">Your running overview</p>
       </div>
+
+      <InstallPWA />
 
       {/* New user guide — shown instead of empty components */}
       {showStravaPrompt && <NewUserGuide />}

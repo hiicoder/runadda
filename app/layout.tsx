@@ -56,8 +56,9 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   verification: {
-    google: "google-site-verification=PhXrwM9WRoxmSHPksQj8vBMWQAs9C_JB-VcMy-KhMGc", // add your Google Search Console verification code here
+    google: "google-site-verification=PhXrwM9WRoxmSHPksQj8vBMWQAs9C_JB-VcMy-KhMGc",
   },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -67,8 +68,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="theme-color" content="#6366f1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="RunAdda" />
+        <link rel="apple-touch-icon" href="/icons/ios/180.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/ios/152.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icons/ios/167.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/ios/180.png" />
+      </head>
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>
+        <script dangerouslySetInnerHTML={{
+          __html: `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js')})}`
+        }} />
       </body>
     </html>
   );
