@@ -37,6 +37,12 @@ export const authOptions: NextAuthOptions = {
             throw new Error("EMAIL_NOT_VERIFIED")
           }
 
+          // Block login if user is blocked by admin
+          if (user.blocked) {
+            console.error("[AUTH] User is blocked:", credentials.email)
+            throw new Error("USER_BLOCKED")
+          }
+
           const passwordValid = await bcrypt.compare(
             credentials.password,
             user.passwordHash

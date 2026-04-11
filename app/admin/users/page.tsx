@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-interface UserItem { id: string; name: string | null; email: string; role: 'USER' | 'EDITOR' | 'ADMIN'; isMember: boolean; stravaConnected: boolean }
+interface UserItem { id: string; name: string | null; email: string; role: 'USER' | 'EDITOR' | 'ADMIN'; isMember: boolean; stravaConnected: boolean; blocked: boolean; emailVerified: string | null }
 interface EventItem { id: string; title: string; dateTime: string }
 interface Analytics { eventId: string; counts: { JOINED: number; MAYBE: number; CANCELED: number }; total: number }
 
@@ -80,6 +80,7 @@ export default function AdminUsersPage() {
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wide">
                   <th className="px-4 py-3 text-left">User</th>
+                  <th className="px-4 py-3 text-left">Status</th>
                   <th className="px-4 py-3 text-left">Role</th>
                   <th className="px-4 py-3 text-left">Member</th>
                   <th className="px-4 py-3 text-left">Strava</th>
@@ -88,7 +89,7 @@ export default function AdminUsersPage() {
               </thead>
               <tbody>
                 {users.map(user => (
-                  <tr key={user.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition">
+                  <tr key={user.id} className={`border-b border-gray-50 last:border-0 hover:bg-gray-50 transition ${user.blocked ? "opacity-60 bg-red-50" : ""}`}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center text-sm shrink-0">👤</div>
@@ -96,6 +97,17 @@ export default function AdminUsersPage() {
                           <p className="font-medium text-gray-900">{user.name ?? <span className="text-gray-400 italic">No name</span>}</p>
                           <p className="text-xs text-gray-400">{user.email}</p>
                         </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-col gap-1">
+                        {user.blocked ? (
+                          <span className="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full w-fit">🚫 Blocked</span>
+                        ) : user.emailVerified ? (
+                          <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full w-fit">✓ Verified</span>
+                        ) : (
+                          <span className="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full w-fit">⏳ Unverified</span>
+                        )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -131,10 +143,16 @@ export default function AdminUsersPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <button onClick={() => deleteUser(user.id, user.name)} disabled={actionId === user.id}
-                        className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition cursor-pointer disabled:opacity-50">
-                        🗑️ Delete
-                      </button>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button onClick={() => patch(user.id, { blocked: !user.blocked })} disabled={actionId === user.id}
+                          className={`px-2.5 py-1 text-xs font-medium rounded-lg transition cursor-pointer disabled:opacity-50 ${user.blocked ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-700" : "bg-amber-50 hover:bg-amber-100 text-amber-700"}`}>
+                          {user.blocked ? "✓ Unblock" : "🚫 Block"}
+                        </button>
+                        <button onClick={() => deleteUser(user.id, user.name)} disabled={actionId === user.id}
+                          className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition cursor-pointer disabled:opacity-50">
+                          🗑️ Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

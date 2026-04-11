@@ -37,6 +37,7 @@ model User {
   stravaRefreshToken String?
   stravaExpiresAt    DateTime?
   stravaConnected    Boolean   @default(false)
+  blocked            Boolean   @default(false)
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 

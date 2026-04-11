@@ -18,6 +18,7 @@ export async function PATCH(
       role?: string
       disconnectStrava?: boolean
       revokeMembership?: boolean
+      blocked?: boolean
     }
 
     const data: Prisma.UserUpdateInput = {}
@@ -46,10 +47,14 @@ export async function PATCH(
       })
     }
 
+    if (typeof body.blocked === "boolean") {
+      data.blocked = body.blocked
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data,
-      select: { id: true, name: true, email: true, role: true, isMember: true, stravaConnected: true },
+      select: { id: true, name: true, email: true, role: true, isMember: true, stravaConnected: true, blocked: true, emailVerified: true },
     })
 
     return NextResponse.json(user)

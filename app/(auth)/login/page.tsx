@@ -9,6 +9,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   OAuthAccountNotLinked: "Email already in use with a different provider",
   CredentialsSignin: "Invalid email or password",
   EMAIL_NOT_VERIFIED: "Please verify your email before signing in. Check your inbox.",
+  USER_BLOCKED: "Your account has been suspended. Contact support at runadda.in@gmail.com",
 }
 
 interface LoginPageProps {
