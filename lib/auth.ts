@@ -31,8 +31,8 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
-          // Block login if email not verified
-          if (!user.emailVerified) {
+          // Block login if email not verified (skip for admin/editor)
+          if (!user.emailVerified && user.role === "USER") {
             console.error("[AUTH] Email not verified:", credentials.email)
             throw new Error("EMAIL_NOT_VERIFIED")
           }
