@@ -43,25 +43,28 @@ export default function RegisterPage() {
     }
   }
 
+  if (registered) {
+    return (
+      <div className="text-center space-y-4 py-4">
+        <div className="text-5xl">📧</div>
+        <p className="font-bold text-gray-900 text-lg">Check your email!</p>
+        <p className="text-sm text-gray-600">
+          We&apos;ve sent a verification link to <strong>{email}</strong>.
+          Please verify your email before signing in.
+        </p>
+        <p className="text-xs text-gray-400">Didn&apos;t get it? Check your spam folder.</p>
+        <button onClick={() => router.push("/login")}
+          className="mt-2 w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition cursor-pointer">
+          Go to Sign In
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-900 mb-6">Create your account</h2>
-
-      {registered ? (
-        <div className="text-center space-y-4 py-4">
-          <div className="text-5xl">📧</div>
-          <p className="font-bold text-gray-900 text-lg">Check your email!</p>
-          <p className="text-sm text-gray-600">
-            We&apos;ve sent a verification link to <strong>{email}</strong>.
-            Please verify your email before signing in.
-          </p>
-          <p className="text-xs text-gray-400">Didn&apos;t get it? Check your spam folder.</p>
-          <button onClick={() => router.push("/login")}
-            className="mt-2 w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition cursor-pointer">
-            Go to Sign In
-          </button>
-        </div>
-      ) : (
+      {error && (
         <div role="alert" className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
           <span>⚠️</span> {error}
         </div>
@@ -106,7 +109,6 @@ export default function RegisterPage() {
         Already have an account?{" "}
         <a href="/login" className="text-indigo-600 font-medium hover:underline">Sign in</a>
       </p>
-      )}
     </div>
   )
 }
