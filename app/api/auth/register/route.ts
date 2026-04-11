@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { createClient } from "@supabase/supabase-js"
 
 const SALT_ROUNDS = 12
 
@@ -20,26 +21,6 @@ function isValidEmail(email: string): boolean {
   return true
 }
 
-async function sendVerificationEmail(email: string, token: string, baseUrl: string) {
-  const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}`
-
-  // Use Supabase service role to send email via their SMTP
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceKey) return
-
-  // Use Supabase Admin API to send a custom email
-  await fetch(`${supabaseUrl}/functions/v1/send-email`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${serviceKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, verifyUrl }),
-  }).catch(() => {}) // non-fatal
-}
-
 export async function POST(request: NextRequest) {
   let body: unknown
   try { body = await request.json() } catch {
@@ -57,22 +38,49 @@ export async function POST(request: NextRequest) {
   if (password.length < 8)
     return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 })
 
-  const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } })
-  if (existing)
-    return NextResponse.json({ error: "Email is already in use", code: "EMAIL_IN_USE" }, { status: 400 })
+  // Delete any existing unverified user with this email (re-registration)
+  await prisma.user.deleteMany({ where: { email, emailVerified: null } })
 
-  // Generate verification token
-  const verifyToken = crypto.randomUUID() + crypto.randomUUID()
-
+  // Generate our own verify token
+  const verifyToken = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "")
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS)
+
   await prisma.user.create({
     data: { email, passwordHash, role: "USER", verifyToken },
     select: { id: true },
   })
 
-  // Send verification email
+  // Send verification email via Supabase Auth signUp
+  // Supabase sends a confirmation email with our redirectTo URL
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   const baseUrl = process.env.NEXTAUTH_URL ?? `https://${request.headers.get("host")}`
-  await sendVerificationEmail(email, verifyToken, baseUrl)
+
+  if (supabaseUrl && supabaseAnonKey) {
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+    // Delete from Supabase Auth first if exists (so signUp works fresh)
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (serviceKey) {
+      const adminClient = createClient(supabaseUrl, serviceKey, {
+        auth: { autoRefreshToken: false, persistSession: false }
+      })
+      const { data: existing } = await adminClient.auth.admin.listUsers()
+      const existingUser = existing?.users?.find(u => u.email === email)
+      if (existingUser) {
+        await adminClient.auth.admin.deleteUser(existingUser.id)
+      }
+    }
+
+    // Sign up in Supabase Auth — this sends the confirmation email
+    await supabase.auth.signUp({
+      email,
+      password: verifyToken, // use token as temp password — we don't use Supabase for login
+      options: {
+        emailRedirectTo: `${baseUrl}/api/auth/verify-email?token=${verifyToken}`,
+      },
+    })
+  }
 
   return NextResponse.json({ ok: true, emailSent: true }, { status: 201 })
 }
