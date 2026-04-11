@@ -43,12 +43,14 @@ export async function GET(request: NextRequest) {
       access_token: string
       refresh_token: string
       expires_at: number
-      athlete: { id: number }
+      athlete: { id: number; profile: string; firstname: string; lastname: string }
     }
 
     const userId = session.user.id
     const stravaAthleteId = String(tokenData.athlete.id)
     const expiresAt = new Date(tokenData.expires_at * 1000)
+    const stravaAvatar = tokenData.athlete.profile // full-size profile picture URL
+    const stravaName = [tokenData.athlete.firstname, tokenData.athlete.lastname].filter(Boolean).join(" ")
 
     // Save tokens to the currently logged-in user
     // Check if this Strava account is already linked to a different user
@@ -68,6 +70,9 @@ export async function GET(request: NextRequest) {
         stravaRefreshToken: tokenData.refresh_token,
         stravaExpiresAt: expiresAt,
         stravaConnected: true,
+        // Update profile picture and name from Strava if not already set
+        ...(stravaAvatar && !stravaAvatar.includes("avatar/athlete/large") ? { image: stravaAvatar } : {}),
+        ...(stravaName && !session.user.name ? { name: stravaName } : {}),
       },
     })
 

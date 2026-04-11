@@ -51,9 +51,6 @@ function PurpleHero() {
           <Link href="/register" className="btn-accent px-7 py-3 font-bold rounded-full text-sm transition shadow-lg">
             Join the Family 🏃
           </Link>
-          <a href="#about" className="px-7 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 text-white font-semibold rounded-full text-sm transition">
-            Our Story →
-          </a>
           <InstallButton />
         </div>
         <div className="mt-12 animate-bounce">
@@ -575,7 +572,6 @@ function Navbar() {
             </Link>
           ) : (
             <>
-              <InstallButton />
               <Link href="/login"
                 className={`text-sm font-semibold px-4 py-2 rounded-full transition ${scrolled ? "text-primary border border-primary/30 hover:bg-primary/10" : "text-white border border-white/30 hover:bg-white/10"}`}>
                 Sign In

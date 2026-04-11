@@ -46,23 +46,29 @@ export default async function ProfilePage() {
       </div>
 
       {/* Identity card */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex items-center gap-5">
-        {image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={image} alt={name ?? "Avatar"} className="w-20 h-20 rounded-full object-cover ring-4 ring-indigo-100 shrink-0" />
-        ) : (
-          <div className="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center text-3xl shrink-0">👤</div>
-        )}
-        <div className="flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-xl font-bold text-gray-900">{name ?? "(no name)"}</p>
-            {isMember && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">MEMBER</span>}
-            {stravaConnected && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold">STRAVA ✓</span>}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <div className="flex items-start gap-4">
+          {image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={image} alt={name ?? "Avatar"} className="w-20 h-20 rounded-full object-cover ring-4 ring-indigo-100 shrink-0" />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center text-3xl shrink-0">👤</div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-xl font-bold text-gray-900 truncate">{name ?? "(no name)"}</p>
+                  {isMember && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold shrink-0">MEMBER</span>}
+                  {stravaConnected && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold shrink-0">STRAVA ✓</span>}
+                </div>
+                <p className="text-sm text-gray-500 truncate">{email}</p>
+                {bio && <p className="text-sm text-gray-600 mt-1">{bio}</p>}
+              </div>
+              <EditProfileButton initialName={name ?? ""} initialBio={bio ?? ""} initialImage={image ?? ""} />
+            </div>
           </div>
-          <p className="text-sm text-gray-500">{email}</p>
-          {bio && <p className="text-sm text-gray-600 mt-1">{bio}</p>}
         </div>
-        <EditProfileButton initialName={name ?? ""} initialBio={bio ?? ""} initialImage={image ?? ""} />
       </div>
 
       {/* ── Step 1: Connect Strava ── */}

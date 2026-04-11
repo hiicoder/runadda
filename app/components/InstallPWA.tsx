@@ -74,58 +74,85 @@ export function InstallButton({ className }: { className?: string }) {
   const [installed, setInstalled] = useState(false)
   const [showIOSGuide, setShowIOSGuide] = useState(false)
   const [installing, setInstalling] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   useEffect(() => {
     if (isStandalone()) { setInstalled(true); return }
     setPlatform(detectPlatform())
     const handler = (e: Event) => { e.preventDefault(); setPrompt(e as BeforeInstallPromptEvent) }
     window.addEventListener("beforeinstallprompt", handler)
-    window.addEventListener("appinstalled", () => { setInstalled(true); setPrompt(null) })
+    window.addEventListener("appinstalled", () => {
+      setInstalled(true)
+      setPrompt(null)
+      setShowSuccess(true)
+      setTimeout(() => setShowSuccess(false), 4000)
+    })
     return () => window.removeEventListener("beforeinstallprompt", handler)
   }, [])
 
-  if (installed) return null
+  if (installed && !showSuccess) return null
 
   async function handleClick() {
     if (prompt) {
       setInstalling(true)
       await prompt.prompt()
       const { outcome } = await prompt.userChoice
-      if (outcome === "accepted") setInstalled(true)
+      if (outcome === "accepted") {
+        setShowSuccess(true)
+        setTimeout(() => setShowSuccess(false), 4000)
+        setInstalled(true)
+      }
       setPrompt(null); setInstalling(false)
     } else if (platform === "ios") {
       setShowIOSGuide(v => !v)
     }
-    // desktop/android without prompt — browser handles it via address bar
   }
 
-  const label = installing ? "Installing…"
-    : platform === "ios" ? "📲 Install App"
-    : "📲 Install App"
+  const label = installing ? "Installing…" : "📲 Install App"
 
   return (
-    <div className={`relative ${className ?? ""}`}>
-      <button onClick={handleClick} disabled={installing}
-        className="flex items-center gap-2 px-4 py-2 bg-white/15 hover:bg-white/25 backdrop-blur border border-white/30 text-white text-sm font-semibold rounded-full transition cursor-pointer disabled:opacity-60">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
-        {label}
-      </button>
-
-      {/* iOS install guide tooltip */}
-      {showIOSGuide && (
-        <div className="absolute top-12 right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 z-50 text-gray-800">
-          <p className="font-bold text-sm mb-2">Install on iPhone/iPad</p>
-          <ol className="text-xs space-y-1.5 text-gray-600">
-            <li>1. Tap the <strong>Share</strong> button <span className="text-lg">⎙</span> at the bottom of Safari</li>
-            <li>2. Scroll down and tap <strong>&ldquo;Add to Home Screen&rdquo;</strong></li>
-            <li>3. Tap <strong>Add</strong> — done!</li>
-          </ol>
-          <button onClick={() => setShowIOSGuide(false)}
-            className="mt-3 text-xs text-indigo-600 font-medium cursor-pointer">Got it ✓</button>
+    <>
+      {/* Success toast */}
+      {showSuccess && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 bg-gray-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div>
+            <p className="font-bold text-sm">RunAdda installed!</p>
+            <p className="text-xs text-gray-400">Find it on your home screen 🏃</p>
+          </div>
+          <button onClick={() => setShowSuccess(false)} className="ml-2 text-gray-500 hover:text-white cursor-pointer text-lg leading-none">×</button>
         </div>
       )}
-    </div>
+
+      {!installed && (
+        <div className={`relative ${className ?? ""}`}>
+          <button onClick={handleClick} disabled={installing}
+            className="flex items-center gap-2 px-4 py-2 bg-white/15 hover:bg-white/25 backdrop-blur border border-white/30 text-white text-sm font-semibold rounded-full transition cursor-pointer disabled:opacity-60">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            {label}
+          </button>
+
+          {/* iOS install guide tooltip */}
+          {showIOSGuide && (
+            <div className="absolute top-12 right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 z-50 text-gray-800">
+              <p className="font-bold text-sm mb-2">Install on iPhone/iPad</p>
+              <ol className="text-xs space-y-1.5 text-gray-600">
+                <li>1. Tap the <strong>Share</strong> button <span className="text-lg">⎙</span> at the bottom of Safari</li>
+                <li>2. Scroll down and tap <strong>&ldquo;Add to Home Screen&rdquo;</strong></li>
+                <li>3. Tap <strong>Add</strong> — done!</li>
+              </ol>
+              <button onClick={() => setShowIOSGuide(false)}
+                className="mt-3 text-xs text-indigo-600 font-medium cursor-pointer">Got it ✓</button>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   )
 }
