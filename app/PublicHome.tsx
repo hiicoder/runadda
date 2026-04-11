@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import ThemeProvider, { applyTheme } from "./components/ThemeProvider"
 import { InstallButton } from "./components/InstallPWA"
+import SupabaseVerifyHandler from "./components/SupabaseVerifyHandler"
 
 interface Sponsor { id: string; name: string; logo: string; url: string | null; showName?: boolean }
 interface Testimonial { id: string; name: string; role: string | null; avatar: string | null; quote: string }
@@ -652,7 +653,9 @@ export default function PublicHome() {
 
       {/* Main content — fades in when ready, instant on return visits */}
       <div className={`min-h-screen bg-white transition-opacity duration-500 ${ready || skipLoader ? "opacity-100" : "opacity-0"}`}>
-        {siteData?.theme && <ThemeProvider theme={siteData.theme} />}
+        {/* Handles Supabase email verification redirects */}
+      <SupabaseVerifyHandler />
+      {siteData?.theme && <ThemeProvider theme={siteData.theme} />}
         <Navbar />
         <PurpleHero />
         {siteData && <ImageSlider slides={siteData.slides} />}

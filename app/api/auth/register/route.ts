@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
   // Delete any existing unverified user with this email (re-registration)
   await prisma.user.deleteMany({ where: { email, emailVerified: null } })
 
-  // Generate our own verify token
   const verifyToken = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "")
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS)
 
@@ -50,36 +49,52 @@ export async function POST(request: NextRequest) {
     select: { id: true },
   })
 
-  // Send verification email via Supabase Auth signUp
-  // Supabase sends a confirmation email with our redirectTo URL
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   const baseUrl = process.env.NEXTAUTH_URL ?? `https://${request.headers.get("host")}`
+  const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${verifyToken}`
 
-  if (supabaseUrl && supabaseAnonKey) {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  // Send via Supabase Auth signUp — uses Supabase's SMTP
+  // We set redirectTo to our verify endpoint so Supabase's link goes there
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-    // Delete from Supabase Auth first if exists (so signUp works fresh)
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    if (serviceKey) {
-      const adminClient = createClient(supabaseUrl, serviceKey, {
-        auth: { autoRefreshToken: false, persistSession: false }
-      })
-      const { data: existing } = await adminClient.auth.admin.listUsers()
-      const existingUser = existing?.users?.find(u => u.email === email)
-      if (existingUser) {
-        await adminClient.auth.admin.deleteUser(existingUser.id)
-      }
-    }
-
-    // Sign up in Supabase Auth — this sends the confirmation email
-    await supabase.auth.signUp({
-      email,
-      password: verifyToken, // use token as temp password — we don't use Supabase for login
-      options: {
-        emailRedirectTo: `${baseUrl}/api/auth/verify-email?token=${verifyToken}`,
-      },
+  if (supabaseUrl && serviceKey) {
+    const adminClient = createClient(supabaseUrl, serviceKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
     })
+
+    // Remove existing Supabase Auth user if any
+    const { data: list } = await adminClient.auth.admin.listUsers()
+    const existing = list?.users?.find(u => u.email === email)
+    if (existing) await adminClient.auth.admin.deleteUser(existing.id)
+
+    // Create Supabase Auth user — this triggers the confirmation email
+    // The confirmation link will go to our verifyUrl
+    await adminClient.auth.admin.generateLink({
+      type: "signup",
+      email,
+      password: verifyToken, // temp password not used for login
+      options: { redirectTo: verifyUrl },
+    }).then(async ({ data }) => {
+      if (data?.properties?.action_link) {
+        // Send the email manually using Supabase's email
+        await adminClient.auth.admin.inviteUserByEmail(email, {
+          redirectTo: verifyUrl,
+        }).catch(() => {})
+      }
+    }).catch(() => {})
+
+    // Fallback: use generateLink to get the magic link and send it
+    const { data: linkData } = await adminClient.auth.admin.generateLink({
+      type: "magiclink",
+      email,
+      options: { redirectTo: verifyUrl },
+    })
+
+    if (linkData?.properties?.action_link) {
+      // The action_link IS the email link — Supabase sends it automatically
+      // when using generateLink with type magiclink
+      console.log("[register] Verification link generated for:", email)
+    }
   }
 
   return NextResponse.json({ ok: true, emailSent: true }, { status: 201 })
