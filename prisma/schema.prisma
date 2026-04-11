@@ -27,6 +27,7 @@ model User {
   name               String?
   email              String    @unique
   emailVerified      DateTime?
+  verifyToken        String?   @unique
   image              String?
   bio                String?
   passwordHash       String?

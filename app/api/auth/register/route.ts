@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
-import { createClient } from "@supabase/supabase-js"
 
 const SALT_ROUNDS = 12
 
@@ -21,6 +20,26 @@ function isValidEmail(email: string): boolean {
   return true
 }
 
+async function sendVerificationEmail(email: string, token: string, baseUrl: string) {
+  const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}`
+
+  // Use Supabase service role to send email via their SMTP
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !serviceKey) return
+
+  // Use Supabase Admin API to send a custom email
+  await fetch(`${supabaseUrl}/functions/v1/send-email`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${serviceKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, verifyUrl }),
+  }).catch(() => {}) // non-fatal
+}
+
 export async function POST(request: NextRequest) {
   let body: unknown
   try { body = await request.json() } catch {
@@ -31,13 +50,10 @@ export async function POST(request: NextRequest) {
 
   if (!email || typeof email !== "string")
     return NextResponse.json({ error: "Email is required" }, { status: 400 })
-
   if (!isValidEmail(email))
     return NextResponse.json({ error: "Please use a valid email address" }, { status: 400 })
-
   if (!password || typeof password !== "string")
     return NextResponse.json({ error: "Password is required" }, { status: 400 })
-
   if (password.length < 8)
     return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 })
 
@@ -45,30 +61,18 @@ export async function POST(request: NextRequest) {
   if (existing)
     return NextResponse.json({ error: "Email is already in use", code: "EMAIL_IN_USE" }, { status: 400 })
 
-  // Send verification email via Supabase Auth
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (supabaseUrl && supabaseAnonKey) {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${process.env.NEXTAUTH_URL}/api/auth/verify-email`,
-        data: { source: "runadda_registration" },
-      },
-    })
-    if (error && error.message !== "User already registered") {
-      console.error("[register] Supabase email error:", error.message)
-      // Non-fatal — still create the account
-    }
-  }
+  // Generate verification token
+  const verifyToken = crypto.randomUUID() + crypto.randomUUID()
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS)
-  const user = await prisma.user.create({
-    data: { email, passwordHash, role: "USER" },
-    select: { id: true, email: true },
+  await prisma.user.create({
+    data: { email, passwordHash, role: "USER", verifyToken },
+    select: { id: true },
   })
 
-  return NextResponse.json({ ...user, emailSent: true }, { status: 201 })
+  // Send verification email
+  const baseUrl = process.env.NEXTAUTH_URL ?? `https://${request.headers.get("host")}`
+  await sendVerificationEmail(email, verifyToken, baseUrl)
+
+  return NextResponse.json({ ok: true, emailSent: true }, { status: 201 })
 }
