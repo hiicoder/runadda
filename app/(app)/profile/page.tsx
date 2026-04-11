@@ -5,6 +5,7 @@ import MembershipSection from "./MembershipSection"
 import LeaderboardPreview from "./LeaderboardPreview"
 import EditProfileButton from "./EditProfileButton"
 import DeleteAccountButton from "./DeleteAccountButton"
+import ChangePasswordButton from "./ChangePasswordButton"
 
 function formatDistance(m: number) { return (m / 1000).toFixed(2) + " km" }
 function formatPace(spm: number) {
@@ -114,6 +115,7 @@ export default async function ProfilePage() {
       {isMember && <LeaderboardPreview />}
 
       {/* Danger zone */}
+      <ChangePasswordButton email={email} />
       <DeleteAccountButton />
     </div>
   )

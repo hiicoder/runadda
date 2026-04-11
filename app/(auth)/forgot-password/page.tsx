@@ -2,18 +2,25 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { supabase } from "@/lib/supabase"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "loading" | "sent">("idle")
+  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle")
+  const [errorMsg, setErrorMsg] = useState("")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setStatus("loading")
-    // In production this would send a reset email via your email provider.
-    // For now we simulate a delay and show a success message.
-    await new Promise(r => setTimeout(r, 800))
-    setStatus("sent")
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    if (error) {
+      setErrorMsg(error.message)
+      setStatus("error")
+    } else {
+      setStatus("sent")
+    }
   }
 
   return (
@@ -25,10 +32,14 @@ export default function ForgotPasswordPage() {
         <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm text-center space-y-2">
           <p className="text-2xl">📧</p>
           <p className="font-semibold">Check your inbox</p>
-          <p>If an account exists for <strong>{email}</strong>, a reset link has been sent.</p>
+          <p>A password reset link has been sent to <strong>{email}</strong>.</p>
+          <p className="text-xs text-emerald-600">Check your spam folder if you don&apos;t see it.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
+          {status === "error" && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">⚠️ {errorMsg}</div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
