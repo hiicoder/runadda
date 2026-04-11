@@ -174,11 +174,10 @@ function AboutTeaser() {
         <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-8 sm:p-12 flex flex-col sm:flex-row items-center gap-8">
           <div className="text-5xl shrink-0">🏃</div>
           <div className="flex-1 text-center sm:text-left">
-            <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">Hamare Baare Mein</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">Community Spirit</span>
             <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Sirf Running Group Nahi, Ek Family Hain Hum</h2>
             <p className="text-gray-600 mt-3 leading-relaxed">
-              Run Adda ek vibrant community hai jo dosti, masti, fitness aur samajik seva ko ek saath celebrate karti hai.
-              Weekly runs, theme runs, social service drives aur post-run breakfasts — har kadam mein masti hai.
+              Hum sirf running group nahi, ek family hain jo har milestone aur har kadam par saath khade hai. Humari masti, daud aur samajik seva har kisi ko apne saath jod kar community ke liye positive change lana chahti hai.
             </p>
           </div>
           <Link href="/about" className="btn-primary shrink-0 px-6 py-3 text-white font-bold rounded-full text-sm transition shadow-md whitespace-nowrap">

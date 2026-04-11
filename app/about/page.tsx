@@ -10,13 +10,13 @@ interface SiteData { about: AboutItem[]; theme?: Theme }
 const DEFAULT_ICONS: Record<string, string> = { intro: "🏃", vision: "🎯", mission: "🚀", value: "❤️" }
 
 const DEFAULT_CONTENT: AboutItem[] = [
-  { id: "d1", section: "intro", title: "Hamare Baare Mein", icon: "🏃", body: "Run Adda ek vibrant aur inclusive running community hai jo dosti, masti, fitness aur social service ko ek saath celebrate karti hai. Hum sirf running group nahi, ek family hain jo har milestone aur har kadam par saath khade hai.", imageUrl: null },
+  { id: "d1", section: "intro", title: "Hamare Baare Mein", icon: "🏃", body: "Run Adda ek vibrant aur inclusive running community hai jo dosti, masti, fitness aur social service ko ek saath celebrate karti hai. Humara naam hi sab kuch keh deta hai - ek 'Adda' jahan har kadam khushiyon aur samajik seva se bhara hua hai.", imageUrl: null },
   { id: "d2", section: "vision", title: "Hamara Vision", icon: "🎯", body: "Har ek kadam ko masti, positivity aur seva ke jazbe se bhar dena, aur health, happiness aur community well-being ko promote karte hue ek strong community banana.", imageUrl: null },
   { id: "d3", section: "mission", title: "Hamara Mission", icon: "🚀", body: "Har umra aur background ke logon ko encourage karna fitness aur running ke zariye apne aap ko sudharne aur samajik seva mein yogdaan dene ke liye.", imageUrl: null },
   { id: "d4", section: "value", title: "Inclusivity", icon: "🤝", body: "Har koi welcome hai — beginner ho ya experienced runner. Koi judgment nahi, sirf support aur encouragement.", imageUrl: null },
-  { id: "d5", section: "value", title: "Fun & Friendship", icon: "😄", body: "Har run ek adventure hai. Hum daud ke saath khushi aur bonding bhi baantte hain.", imageUrl: null },
+  { id: "d5", section: "value", title: "Fun & Friendship", icon: "😄", body: "Har run ek adventure hai. Hum daud ke saath khushi aur bonding bhi banatte hain.", imageUrl: null },
   { id: "d6", section: "value", title: "Health & Fitness", icon: "💪", body: "Apne shaaririk aur maansik swasthya ko promote karna — ek kadam ek baar mein.", imageUrl: null },
-  { id: "d7", section: "value", title: "Community Service", icon: "❤️", body: "Charity runs, cleanliness drives, tree plantation, aur needy logon ke liye fundraisers.", imageUrl: null },
+  { id: "d7", section: "value", title: "Community Service", icon: "❤️", body: "Hum har kadam ke saath samajik sudhar mein yogdaan dene ke liye pratibaddh hain, jaise charity runs, environmental drives, aur needy logon ke liye fundraisers.", imageUrl: null },
 ]
 
 const CACHE_KEY = "runadda_about_data"
