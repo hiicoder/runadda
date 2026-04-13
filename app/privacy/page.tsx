@@ -48,8 +48,7 @@ export default function PrivacyPage() {
             <li className="flex gap-2"><span>•</span> Provide weekly summaries and progress insights</li>
             <li className="flex gap-2"><span>•</span> Verify membership eligibility based on activity data</li>
             <li className="flex gap-2"><span>•</span> Improve the platform experience for all users</li>
-            <li className="flex gap-2"><span>•</span> •
-Display leaderboard rankings within the RunAdda community, visible only to registered members of the platform. Leaderboards are not publicly accessible outside RunAdda.</li>
+            <li className="flex gap-2"><span>•</span> Display leaderboard rankings within the RunAdda community, visible only to registered members of the platform. Leaderboards are not publicly accessible outside RunAdda.</li>
           </ul>
         </section>
 
@@ -61,9 +60,12 @@ Display leaderboard rankings within the RunAdda community, visible only to regis
           <p className="text-gray-600 text-sm leading-relaxed mb-3">
             By connecting your Strava account, you also agree to <a href="https://www.strava.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Strava's Privacy Policy</a> and <a href="https://www.strava.com/legal/api" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Strava API Agreement</a>.
           </p>
+          
+          <p>Activity data is not continuously collected in the background. Users must manually initiate syncing from their dashboard, and data is refreshed automatically once every 24 hours.</p>
           <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-sm text-indigo-800">
-            <strong>Data we cache from Strava:</strong> We store limited activity data from Strava only as necessary to provide core features such as dashboards and leaderboards. This includes activity type, distance, moving time, pace, elevation gain, and date. We do not store GPS routes, heart rate data, or any sensitive health metrics.
+            <strong>NOTE:</strong> We store limited activity data from Strava only as necessary to provide core features such as dashboards and leaderboards. This includes activity type, distance, moving time, pace, elevation gain, and date. We do not store GPS routes, heart rate data, or any sensitive health metrics.
           </div>
+          <p>RunAdda is not affiliated with, endorsed by, or sponsored by Strava.</p>
         </section>
 
         <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
@@ -90,9 +92,15 @@ Display leaderboard rankings within the RunAdda community, visible only to regis
             <li className="flex gap-2"><span>•</span> Opt out of leaderboard participation by disconnecting Strava or requesting account removal</li>
           </ul>
         </section>
+           <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
+          <h2 className="text-lg font-bold text-gray-900 mb-3">8. Data Retention</h2>
+          <p className="text-gray-600 text-sm leading-relaxed">
+           We retain your data only as long as necessary to provide our services. If you disconnect your Strava account or request deletion, your data will be removed from our systems within a reasonable timeframe.
+          </p>
+        </section>
 
         <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-3">8. Contact</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">9. Contact</h2>
           <p className="text-gray-600 text-sm leading-relaxed">
             If you have any questions, concerns, or requests regarding this Privacy Policy or your data, please contact us at:
           </p>
