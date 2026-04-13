@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
           <h2 className="text-lg font-bold text-gray-900 mb-3">1. Introduction</h2>
           <p className="text-gray-600 text-sm leading-relaxed">
-            Welcome to RunAdda ("we", "our", or "us"). We are committed to protecting your personal data and respecting your privacy. This Privacy Policy explains how we collect, use, and safeguard information when you use our platform at <strong>runadda.vercel.app</strong>.
+            Welcome to RunAdda ("we", "our", or "us"). We are committed to protecting your personal data and respecting your privacy. This Privacy Policy explains how we collect, use, and safeguard information when you use our platform at <strong>runadda.in</strong>.
           </p>
         </section>
 
@@ -48,6 +48,8 @@ export default function PrivacyPage() {
             <li className="flex gap-2"><span>•</span> Provide weekly summaries and progress insights</li>
             <li className="flex gap-2"><span>•</span> Verify membership eligibility based on activity data</li>
             <li className="flex gap-2"><span>•</span> Improve the platform experience for all users</li>
+            <li className="flex gap-2"><span>•</span> •
+Display leaderboard rankings within the RunAdda community, visible only to registered members of the platform. Leaderboards are not publicly accessible outside RunAdda.</li>
           </ul>
         </section>
 
@@ -60,7 +62,7 @@ export default function PrivacyPage() {
             By connecting your Strava account, you also agree to <a href="https://www.strava.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Strava's Privacy Policy</a> and <a href="https://www.strava.com/legal/api" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Strava API Agreement</a>.
           </p>
           <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-sm text-indigo-800">
-            <strong>Data we cache from Strava:</strong> activity type, distance, moving time, pace, elevation gain, and date. We do not store GPS routes, heart rate, or any sensitive health metrics.
+            <strong>Data we cache from Strava:</strong> We store limited activity data from Strava only as necessary to provide core features such as dashboards and leaderboards. This includes activity type, distance, moving time, pace, elevation gain, and date. We do not store GPS routes, heart rate data, or any sensitive health metrics.
           </div>
         </section>
 
@@ -82,9 +84,10 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-bold text-gray-900 mb-3">7. Your Rights</h2>
           <ul className="space-y-2 text-sm text-gray-600">
             <li className="flex gap-2"><span>•</span> <strong>Disconnect Strava</strong> at any time from your Profile page — this revokes our access to your Strava data</li>
-            <li className="flex gap-2"><span>•</span> <strong>Request data deletion</strong> by contacting us at <a href="mailto:support@runadda.com" className="text-indigo-600 hover:underline">support@runadda.com</a></li>
+            <li className="flex gap-2"><span>•</span> <strong>Request data deletion</strong> by contacting us at <a href="mailto:support@runadda.in@gmail.com" className="text-indigo-600 hover:underline">support@runadda.in@gmail.com</a></li>
             <li className="flex gap-2"><span>•</span> <strong>Access your data</strong> — all your activity data is visible on your dashboard and activities page</li>
-            <li className="flex gap-2"><span>•</span> <strong>Revoke Strava access</strong> directly from <a href="https://www.strava.com/settings/apps" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Strava Settings → My Apps</a></li>
+            <li className="flex gap-2"><span>•</span> <strong>Revoke Strava access</strong> directly from <a href="https://www.strava.in/settings/apps" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Strava Settings → My Apps</a></li>
+            <li className="flex gap-2"><span>•</span> Opt out of leaderboard participation by disconnecting Strava or requesting account removal</li>
           </ul>
         </section>
 
@@ -94,7 +97,7 @@ export default function PrivacyPage() {
             If you have any questions, concerns, or requests regarding this Privacy Policy or your data, please contact us at:
           </p>
           <p className="mt-3 text-sm font-semibold text-indigo-700">
-            📧 <a href="mailto:support@runadda.com" className="hover:underline">support@runadda.com</a>
+            📧 <a href="mailto:support@runadda.in@gmail.com" className="hover:underline">support@runadda.in@gmail.com</a>
           </p>
         </section>
 
