@@ -500,6 +500,7 @@ function Footer() {
               <li><a href="#events" className="hover:text-white transition">Events</a></li>
               <li><a href="#contact" className="hover:text-white transition">Contact</a></li>
               <li><Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-white transition">Terms of Service</Link></li>
             </ul>
           </div>
           <div>
