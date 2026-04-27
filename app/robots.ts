@@ -6,9 +6,11 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin/", "/api/", "/dashboard/", "/profile/", "/activities/", "/leaderboard/"],
+        disallow: ["/admin/", "/api/", "/dashboard/"],
       },
     ],
     sitemap: "https://runadda.in/sitemap.xml",
   }
 }
+
+ //       disallow: ["/admin/", "/api/", "/dashboard/", "/profile/", "/activities/", "/leaderboard/"],
