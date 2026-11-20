@@ -78,19 +78,27 @@ export const authOptions: NextAuthOptions = {
     // Strava is handled via custom /api/strava/connect flow, not NextAuth OAuth
   ],
   callbacks: {
-    async jwt({ token, user, trigger }) {
-      // On initial sign-in, embed user fields into the JWT
+    async jwt({ token, user, trigger, account }) {
+      // On initial sign-in, fetch full user data from database
       if (user) {
-        token.userId = user.id
-        const u = user as typeof user & { role?: string; stravaConnected?: boolean; isMember?: boolean }
-        token.role = (u.role ?? "USER") as "USER" | "EDITOR" | "ADMIN"
-        token.isMember = u.isMember ?? false
-        token.stravaConnected = u.stravaConnected ?? false
+        // For Google OAuth, user object may not have all fields
+        // Fetch the complete user from DB using email
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+          select: { id: true, role: true, isMember: true, stravaConnected: true },
+        })
+
+        if (dbUser) {
+          token.userId = dbUser.id
+          token.role = dbUser.role as "USER" | "EDITOR" | "ADMIN"
+          token.isMember = dbUser.isMember
+          token.stravaConnected = dbUser.stravaConnected
+        }
       }
 
       if (trigger === "update" && token.userId) {
         const dbUser = await prisma.user.findUnique({
-          where: { id: token.userId },
+          where: { id: token.userId as string },
           select: { role: true, stravaConnected: true, isMember: true },
         })
         if (dbUser) {
@@ -140,6 +148,30 @@ export const authOptions: NextAuthOptions = {
               },
             })
           }
+          return true
+        } else {
+          // User doesn't exist yet - create with Google data
+          await prisma.user.create({
+            data: {
+              email: user.email,
+              name: user.name || "",
+              image: user.image,
+              emailVerified: new Date(), // Google users are already verified
+              accounts: {
+                create: {
+                  type: account.type,
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  access_token: account.access_token,
+                  refresh_token: account.refresh_token,
+                  expires_at: account.expires_at,
+                  token_type: account.token_type,
+                  scope: account.scope,
+                  id_token: account.id_token,
+                },
+              },
+            },
+          })
           return true
         }
       }
