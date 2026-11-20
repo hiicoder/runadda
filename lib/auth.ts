@@ -79,29 +79,38 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, trigger, account }) {
-      // On initial sign-in, fetch full user data from database
-      if (user) {
-        // For Google OAuth, user object may not have all fields
-        // Fetch the complete user from DB using email
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-          select: { id: true, role: true, isMember: true, stravaConnected: true },
-        })
+      // Always ensure token has userId — either from initial sign-in or from token persistence
+      // This handles both credentials and OAuth providers, including token refresh scenarios
+      if (user || !token.userId) {
+        // Fetch full user data from database
+        // If 'user' exists: initial sign-in (use user.email)
+        // If 'user' doesn't exist but token.userId is missing: token refresh, need to look up by email
+        const email = user?.email || token.email
+        
+        if (email) {
+          const dbUser = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true, role: true, isMember: true, stravaConnected: true },
+          })
 
-        if (dbUser) {
-          token.userId = dbUser.id
-          token.role = dbUser.role as "USER" | "EDITOR" | "ADMIN"
-          token.isMember = dbUser.isMember
-          token.stravaConnected = dbUser.stravaConnected
+          if (dbUser) {
+            token.userId = dbUser.id
+            token.email = email
+            token.role = dbUser.role as "USER" | "EDITOR" | "ADMIN"
+            token.isMember = dbUser.isMember
+            token.stravaConnected = dbUser.stravaConnected
+          }
         }
       }
 
       if (trigger === "update" && token.userId) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.userId as string },
-          select: { role: true, stravaConnected: true, isMember: true },
+          select: { id: true, email: true, role: true, stravaConnected: true, isMember: true },
         })
         if (dbUser) {
+          token.userId = dbUser.id
+          token.email = dbUser.email
           token.role = dbUser.role as "USER" | "EDITOR" | "ADMIN"
           token.isMember = dbUser.isMember
           token.stravaConnected = dbUser.stravaConnected
@@ -112,7 +121,8 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.userId
+        session.user.id = token.userId as string
+        session.user.email = token.email as string
         session.user.role = token.role
         session.user.isMember = token.isMember
         session.user.stravaConnected = token.stravaConnected
@@ -151,12 +161,14 @@ export const authOptions: NextAuthOptions = {
           return true
         } else {
           // User doesn't exist yet - create with Google data
+          // Google OAuth inherently proves email ownership, so we can safely mark as verified
+          // (Google doesn't issue access tokens without the user controlling the email)
           await prisma.user.create({
             data: {
               email: user.email,
               name: user.name || "",
               image: user.image,
-              emailVerified: new Date(), // Google users are already verified
+              emailVerified: new Date(), // Safe: Google verified ownership
               accounts: {
                 create: {
                   type: account.type,
