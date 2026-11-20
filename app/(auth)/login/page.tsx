@@ -13,15 +13,15 @@ const ERROR_MESSAGES: Record<string, string> = {
 }
 
 interface LoginPageProps {
-  searchParams: Promise<{ error?: string; callbackUrl?: string; registered?: string }>
+  searchParams: Promise<{ error?: string; callbackUrl?: string; registered?: string; verified?: string }>
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { error, callbackUrl, registered } = await searchParams
+  const { error, callbackUrl, registered, verified } = await searchParams
 
   const errorMessage = error ? (ERROR_MESSAGES[error] ?? "An authentication error occurred") : undefined
   const successMessage = registered === "true" ? "Account created — please sign in."
-    : error === "verified" ? "✓ Email verified! You can now sign in."
+    : verified === "true" ? "✓ Email verified! You can now sign in."
     : undefined
 
   return (

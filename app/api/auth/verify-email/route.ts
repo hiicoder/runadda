@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     data: { emailVerified: new Date(), verifyToken: null },
   })
 
-  return NextResponse.redirect(new URL("/login?error=verified", req.url))
+  return NextResponse.redirect(new URL("/login?verified=true", req.url))
 }
 
 // POST — Supabase access token verification (from hash redirect)
