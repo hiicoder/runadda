@@ -27,31 +27,319 @@ body {
   color: #0f172a;
 }
 
-/* Theme utility classes */
+/* ============================================
+   SHADOW HIERARCHY & ELEVATION SYSTEM
+   ============================================ */
+@layer utilities {
+  /* Subtle shadow - for content separation */
+  .shadow-xs {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  /* Default shadow - for cards and containers */
+  .shadow-sm {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  /* Medium shadow - for hovered/interactive elements */
+  .shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Elevated shadow - for important content */
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Extra elevated shadow - for modals/overlays */
+  .shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Extra extra elevated shadow */
+  .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* ============================================
+   ENHANCED BUTTON SYSTEM
+   ============================================ */
+
+/* Primary button - branded, full-featured */
 .btn-primary {
-  background-color: var(--color-primary);
-  color: white;
+  @apply px-4 py-2.5 rounded-lg font-semibold text-sm
+         bg-gradient-to-b from-[var(--color-primary)] to-[color-mix(in_srgb,_var(--color-primary)_85%,_black)]
+         text-white shadow-sm
+         hover:shadow-md hover:-translate-y-0.5
+         active:shadow-xs active:translate-y-0
+         disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:shadow-sm disabled:hover:-translate-y-0
+         transition-all duration-200 ease-out;
 }
-.btn-primary:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 85%, black);
+
+.btn-primary:disabled {
+  pointer-events: none;
 }
+
+/* Secondary button - muted, secondary actions */
+.btn-secondary {
+  @apply px-4 py-2.5 rounded-lg font-semibold text-sm
+         bg-gray-100 text-gray-900 shadow-xs
+         hover:bg-gray-200 hover:shadow-sm
+         active:bg-gray-200 active:shadow-xs
+         disabled:opacity-50 disabled:cursor-not-allowed
+         transition-all duration-200 ease-out;
+}
+
+/* Outline button - tertiary, minimal visual weight */
+.btn-outline {
+  @apply px-4 py-2.5 rounded-lg font-semibold text-sm
+         border-2 border-gray-300 text-gray-700 shadow-xs
+         hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm
+         active:border-gray-400 active:bg-gray-50 active:shadow-xs
+         disabled:opacity-50 disabled:cursor-not-allowed
+         transition-all duration-200 ease-out;
+}
+
+/* Ghost button - no background, text only */
+.btn-ghost {
+  @apply px-4 py-2.5 rounded-lg font-semibold text-sm
+         text-gray-700
+         hover:bg-gray-100
+         active:bg-gray-100
+         disabled:opacity-50 disabled:cursor-not-allowed
+         transition-all duration-200 ease-out;
+}
+
+/* Accent button - calls attention */
 .btn-accent {
-  background-color: var(--color-accent);
-  color: var(--color-neutral);
+  @apply px-4 py-2.5 rounded-lg font-semibold text-sm
+         bg-gradient-to-b from-[var(--color-accent)] to-[color-mix(in_srgb,_var(--color-accent)_85%,_black)]
+         text-var(--color-neutral) shadow-sm
+         hover:shadow-md hover:-translate-y-0.5
+         active:shadow-xs active:translate-y-0
+         disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:shadow-sm disabled:hover:-translate-y-0
+         transition-all duration-200 ease-out;
 }
-.btn-accent:hover {
-  background-color: color-mix(in srgb, var(--color-accent) 85%, black);
+
+.btn-accent:disabled {
+  pointer-events: none;
 }
+
+/* Success button - confirmations */
+.btn-success {
+  @apply px-4 py-2.5 rounded-lg font-semibold text-sm
+         bg-gradient-to-b from-emerald-500 to-emerald-600
+         text-white shadow-sm
+         hover:shadow-md hover:-translate-y-0.5
+         active:shadow-xs active:translate-y-0
+         disabled:opacity-50 disabled:cursor-not-allowed
+         transition-all duration-200 ease-out;
+}
+
+/* Danger button - destructive actions */
+.btn-danger {
+  @apply px-4 py-2.5 rounded-lg font-semibold text-sm
+         bg-gradient-to-b from-red-500 to-red-600
+         text-white shadow-sm
+         hover:shadow-md hover:-translate-y-0.5
+         active:shadow-xs active:translate-y-0
+         disabled:opacity-50 disabled:cursor-not-allowed
+         transition-all duration-200 ease-out;
+}
+
+/* Button size modifiers */
+.btn-sm {
+  @apply px-3 py-1.5 text-xs;
+}
+
+.btn-lg {
+  @apply px-6 py-3 text-base;
+}
+
+.btn-block {
+  @apply w-full;
+}
+
+/* ============================================
+   THEME UTILITY CLASSES
+   ============================================ */
 .text-primary { color: var(--color-primary); }
 .bg-primary { background-color: var(--color-primary); }
 .bg-primary-soft { background-color: rgb(var(--color-primary-rgb) / 0.1); }
 .border-primary { border-color: var(--color-primary); }
 .bg-accent { background-color: var(--color-accent); }
 .text-accent { color: var(--color-accent); }
+
 .bg-hero {
   background: linear-gradient(135deg, var(--color-neutral) 0%, var(--color-secondary) 50%, var(--color-primary) 100%);
 }
-.ring-primary:focus { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.ring-primary:focus { 
+  outline: 2px solid var(--color-primary); 
+  outline-offset: 2px; 
+}
+
+/* ============================================
+   GRADIENT CARDS
+   ============================================ */
+@layer utilities {
+  .card-gradient-primary {
+    @apply bg-gradient-to-br from-white to-blue-50;
+  }
+
+  .card-gradient-secondary {
+    @apply bg-gradient-to-br from-white to-purple-50;
+  }
+
+  .card-gradient-accent {
+    @apply bg-gradient-to-br from-white to-yellow-50;
+  }
+
+  .card-gradient-success {
+    @apply bg-gradient-to-br from-white to-emerald-50;
+  }
+
+  .card-gradient-neutral {
+    @apply bg-gradient-to-br from-white to-slate-50;
+  }
+}
+
+/* ============================================
+   SMOOTH ANIMATIONS & TRANSITIONS
+   ============================================ */
+@layer utilities {
+  @keyframes stagger-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .animate-stagger {
+    animation: stagger-in 0.6s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+    background-size: 1000px 100%;
+  }
+
+  /* Stagger children animations */
+  .animate-stagger-children > * {
+    animation: stagger-in 0.6s ease-out;
+  }
+
+  .animate-stagger-children > :nth-child(1) { animation-delay: 0ms; }
+  .animate-stagger-children > :nth-child(2) { animation-delay: 100ms; }
+  .animate-stagger-children > :nth-child(3) { animation-delay: 200ms; }
+  .animate-stagger-children > :nth-child(4) { animation-delay: 300ms; }
+  .animate-stagger-children > :nth-child(5) { animation-delay: 400ms; }
+  .animate-stagger-children > :nth-child(6) { animation-delay: 500ms; }
+  .animate-stagger-children > :nth-child(7) { animation-delay: 600ms; }
+  .animate-stagger-children > :nth-child(8) { animation-delay: 700ms; }
+}
+
+/* ============================================
+   ENHANCED FORM STYLING
+   ============================================ */
+@layer components {
+  .form-input {
+    @apply w-full px-3 py-2 rounded-lg
+           border border-gray-300
+           text-gray-900 placeholder-gray-400
+           bg-white
+           shadow-xs
+           focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-0 focus:border-transparent
+           disabled:bg-gray-100 disabled:cursor-not-allowed
+           transition-all duration-200;
+  }
+
+  .form-input.error {
+    @apply border-red-300 focus:ring-red-500;
+  }
+
+  .form-input.success {
+    @apply border-emerald-300 focus:ring-emerald-500;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-2;
+  }
+
+  .form-helper-text {
+    @apply text-xs text-gray-500 mt-1;
+  }
+
+  .form-error-text {
+    @apply text-xs text-red-600 mt-1;
+  }
+
+  .form-success-text {
+    @apply text-xs text-emerald-600 mt-1;
+  }
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY
+   ============================================ */
+@layer utilities {
+  .text-hero {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    @apply font-black tracking-tight;
+  }
+
+  .text-section {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    @apply font-bold tracking-tight;
+  }
+
+  .text-subsection {
+    font-size: clamp(1.25rem, 3vw, 1.875rem);
+    @apply font-semibold tracking-tight;
+  }
+}
 
 /* Hide browser native password reveal button */
 input[type="password"]::-ms-reveal,
