@@ -70,6 +70,7 @@ describe("Property 13: Non-admin users receive 403 on admin routes", () => {
           mockGetToken.mockResolvedValue({
             userId,
             role: "USER",
+            isMember: false,
             stravaConnected: false,
             sub: userId,
             iat: Math.floor(Date.now() / 1000),
@@ -96,6 +97,7 @@ describe("Property 13: Non-admin users receive 403 on admin routes", () => {
           mockGetToken.mockResolvedValue({
             userId,
             role: "ADMIN",
+            isMember: false,
             stravaConnected: false,
             sub: userId,
             iat: Math.floor(Date.now() / 1000),
@@ -161,6 +163,7 @@ describe("Property 13: Non-admin users receive 403 on admin routes", () => {
           mockGetToken.mockResolvedValue({
             userId,
             role: "USER",
+            isMember: false,
             stravaConnected: false,
             sub: userId,
             iat: Math.floor(Date.now() / 1000),

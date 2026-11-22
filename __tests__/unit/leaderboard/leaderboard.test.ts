@@ -64,7 +64,7 @@ describe('getLeaderboard — aggregation', () => {
     expect(result[0].totalDistance).toBe(8000)
     expect(result[0].totalMovingTime).toBe(2400)
     expect(result[0].totalElevationGain).toBe(80)
-    expect(result[0].runCount).toBe(2)
+    expect(result[0].activityCount).toBe(2)
   })
 
   it('computes averagePace as totalMovingTime / totalDistance', async () => {
