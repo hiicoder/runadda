@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     // Supabase puts the token in the URL hash — check session is valid
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }: any) => {
       if (data.session) setReady(true)
       else setErrorMsg("Invalid or expired reset link. Please request a new one.")
     })
