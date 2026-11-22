@@ -43,9 +43,9 @@ export default function FormInput({
           type={type}
           className={cn(
             "form-input",
-            icon && "pl-10",
-            error && "form-input.error",
-            success && "form-input.success",
+            icon ? "pl-10" : "",
+            error ? "form-input.error" : "",
+            success ? "form-input.success" : "",
             className
           )}
           {...props}

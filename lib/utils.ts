@@ -6,7 +6,7 @@
  * Combines multiple class names with support for conditional classes
  * Similar to clsx/classnames library but lightweight
  */
-export function cn(...classes: (string | undefined | null | false)[]): string {
+export function cn(...classes: (string | undefined | null | boolean | number)[]): string {
   return classes
     .filter((c): c is string => typeof c === "string")
     .join(" ")

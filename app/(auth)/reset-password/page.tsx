@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import bcrypt from "bcryptjs"
 
+export const dynamic = "force-dynamic"
+
 export default function ResetPasswordPage() {
   const router = useRouter()
   const [password, setPassword] = useState("")
